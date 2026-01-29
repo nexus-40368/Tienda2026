@@ -37,16 +37,12 @@ public class Pedido {
     public void setIdPedido(String idPedido) {
         this.idPedido = idPedido;
     }
-
-
     public ArrayList<LineaPedido> getCestaCompra() {
         return cestaCompra;
     }
-
     public void setCestaCompra(ArrayList<LineaPedido> cestaCompra) {
         this.cestaCompra = cestaCompra;
     }
-
     public Cliente getClientePedido() {
         return clientePedido;
     }
@@ -54,7 +50,6 @@ public class Pedido {
     public void setClientePedido(Cliente clientePedido) {
         this.clientePedido = clientePedido;
     }
-
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -66,5 +61,4 @@ public class Pedido {
         sb.append('}');
         return sb.toString();
     }
-    
 }
