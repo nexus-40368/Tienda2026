@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +34,19 @@ public class Tienda2026 {
 
         t2026.menu();
     }
+
     //<editor-fold defaultstate="collapsed" desc="metodos">
+    private void stock(String idArticulo, int unidades) throws StockCero, StockInsuficiente {
+        if (articulos.get(idArticulo).getExistencias() == 0) {
+            throw new StockCero("0 unidades disponibles"
+                    + articulos.get(idArticulo).getDescripcion());
+        }
+        if (articulos.get(idArticulo).getExistencias() < unidades) {
+            throw new StockInsuficiente("Solo hay " + articulos.get(idArticulo).getExistencias()
+                    + articulos.get(idArticulo).getDescripcion());
+        }
+
+    }
 
     public String generaIdPedido(String idCliente) {
         int contador = 0;
@@ -61,7 +75,7 @@ public class Tienda2026 {
         articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
         articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
         articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300 ", 5, 80));
-         articulos.put("3-11", new Articulo("3-11", "HP LASER", 5, 80));
+        articulos.put("3-11", new Articulo("3-11", "HP LASER", 5, 80));
         articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22 ", 5, 100));
         articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28 ", 5, 180));
         articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
@@ -349,15 +363,63 @@ public class Tienda2026 {
     //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Gestión Pedidos">
     private void nuevoPedido() {
+        sc.nextLine();
         String idCliente;
         do {
             System.out.println("DNI (id) CLIENTE:");
             idCliente = sc.nextLine().toUpperCase();
+
+            if (!clientes.containsKey(idCliente)) {
+                System.out.println("El id de clente no es valido. "
+                        + "Desea darse de alta como cliente o comprar como invitado");
+            }
+
         } while (!MetodosAuxiliares.validarDni(idCliente));
-        ArrayList <LineaPedido> cestaCompra = new ArrayList();
+        ArrayList<LineaPedido> cestaCompra = new ArrayList();
         String idArticulo;
-        int unidades=0;
-        do {            
+        int unidades = 0;
+        System.out.print("\nTeclee el ID del articulo deseado (FIN para terminar la compra)");
+        idArticulo = sc.next();
+
+        while (idArticulo.equalsIgnoreCase("FIN"));
+        { //Es mejor utilizar un while en lugar de un do while como en el commit anterior, con el do while estamos obligando a la persona a seguir con los atributos aunque no quiera comprar
+            System.out.print("\nTeclee las unidades deseadas: ");
+            unidades = sc.nextInt();
+
+            try {
+                stock(idArticulo, unidades);
+                cestaCompra.add(new LineaPedido(idArticulo, unidades));
+                
+            } catch (StockCero ex) {
+                System.out.println(ex.getMessage());
+            } catch (StockInsuficiente ex) {
+                System.out.println(ex.getMessage());
+                
+                System.out.println("Quieres las unidades disponibles (SI / NO)");
+                String respuesta=sc.next();
+                if (respuesta.equalsIgnoreCase("SI")) {
+                    cestaCompra.add(new LineaPedido(idArticulo,articulos.get(idArticulo).getExistencias()));// le damos los articulos que hay
+                    articulos.get(idArticulo).setExistencias(0);
+                }
+                System.out.println("\nTeclea el ID del articulo que deseas (FIN para terminar la compra)");
+            }
+            
+            System.out.println("\nTeclee el ID del artículo deseado (FIN para terminar la compra)");
+            idArticulo = sc.next();
+            /*Pedimos uno a uno los atributos del pedido, son las cosas que necesitamos para realizar un pedido
+        -Generamos el id de ese pedido mediante la llamada al método generaIdPedido anterior
+        -Lo asociamos a un cliente
+        -Obtenemos la fecha del pedido
+        -Hace falta rellenar el ArrayList del pedido*/
+        }
+        if (cestaCompra.size() > 0) {//tambien valdria (!cestaCompra.isEmpty())
+            Pedido p = new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra);
+            pedidos.add(p);
+
+        }
+    }
+
+    /*   do {            
             System.out.println("Teclea el ID del articulo deseado (FIN para terminar la compra) ");
             idArticulo=sc.nextLine();
             System.err.println("\nTeclea las unidades deseadas: ");
@@ -366,9 +428,7 @@ public class Tienda2026 {
         } while (!idArticulo.equalsIgnoreCase("FIN"));
                 
         Pedido p = new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra);
-        pedidos.add(p);
-    }
-
+        pedidos.add(p);*/
     private void listadoPedido() {
         System.out.println("Vamos a mostrar los pedidos de la tienda: ");
         for (Pedido p : pedidos) {
