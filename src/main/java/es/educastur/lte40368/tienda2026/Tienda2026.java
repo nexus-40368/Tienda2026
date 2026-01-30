@@ -5,6 +5,7 @@ package es.educastur.lte40368.tienda2026;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class Tienda2026 {
 
     static Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;
+    private ArrayList<LineaPedido> cestaCompra = new ArrayList();
     private HashMap<String, Articulo> articulos;
     private HashMap<String, Cliente> clientes;
 
@@ -61,6 +63,14 @@ public class Tienda2026 {
         nuevoId = idCliente + "-" + String.format("%03d", contador) + "/" + LocalDate.now().getYear();
         return nuevoId;
         //</editor-fold>
+    }
+
+    private double totalPedido(Pedido p) {
+        double totalPedido = 0;
+        for (LineaPedido l : p.getCestaCompra()) {
+            totalPedido += l.getUnidades() * articulos.get(l.getIdArticulo()).getPvp();
+        }
+        return totalPedido;
     }
 
     public void cargaDatos() {
@@ -243,7 +253,7 @@ public class Tienda2026 {
                     break;
                 }
                 case 3: {
-                    totalPedido();
+                    Pedido p;
                     break;
                 }
 
@@ -375,37 +385,34 @@ public class Tienda2026 {
             }
 
         } while (!MetodosAuxiliares.validarDni(idCliente));
-        ArrayList<LineaPedido> cestaCompra = new ArrayList();
         String idArticulo;
         int unidades = 0;
         System.out.print("\nTeclee el ID del articulo deseado (FIN para terminar la compra)");
         idArticulo = sc.next();
+        while (idArticulo.equalsIgnoreCase("FIN")) {
+            { //Es mejor utilizar un while en lugar de un do while como en el commit anterior, con el do while estamos obligando a la persona a seguir con los atributos aunque no quiera comprar
+                System.out.print("\nTeclee las unidades deseadas: ");
+                unidades = sc.nextInt();
 
-        while (idArticulo.equalsIgnoreCase("FIN"));
-        { //Es mejor utilizar un while en lugar de un do while como en el commit anterior, con el do while estamos obligando a la persona a seguir con los atributos aunque no quiera comprar
-            System.out.print("\nTeclee las unidades deseadas: ");
-            unidades = sc.nextInt();
+                try {
+                    stock(idArticulo, unidades);
+                    cestaCompra.add(new LineaPedido(idArticulo, unidades));
 
-            try {
-                stock(idArticulo, unidades);
-                cestaCompra.add(new LineaPedido(idArticulo, unidades));
-                
-            } catch (StockCero ex) {
-                System.out.println(ex.getMessage());
-            } catch (StockInsuficiente ex) {
-                System.out.println(ex.getMessage());
-                
-                System.out.println("Quieres las unidades disponibles (SI / NO)");
-                String respuesta=sc.next();
-                if (respuesta.equalsIgnoreCase("SI")) {
-                    cestaCompra.add(new LineaPedido(idArticulo,articulos.get(idArticulo).getExistencias()));// le damos los articulos que hay
-                    articulos.get(idArticulo).setExistencias(0);
+                } catch (StockCero ex) {
+                    System.out.println(ex.getMessage());
+                } catch (StockInsuficiente ex) {
+                    System.out.println(ex.getMessage());
+
+                    System.out.println("Quieres las unidades disponibles (SI / NO)");
+                    String respuesta = sc.next();
+                    if (respuesta.equalsIgnoreCase("SI")) {
+                        cestaCompra.add(new LineaPedido(idArticulo, articulos.get(idArticulo).getExistencias()));// le damos los articulos que hay
+                        articulos.get(idArticulo).setExistencias(0);
+                    }
+                    System.out.println("\nTeclea el ID del articulo que deseas (FIN para terminar la compra)");
                 }
-                System.out.println("\nTeclea el ID del articulo que deseas (FIN para terminar la compra)");
+
             }
-            
-            System.out.println("\nTeclee el ID del artículo deseado (FIN para terminar la compra)");
-            idArticulo = sc.next();
             /*Pedimos uno a uno los atributos del pedido, son las cosas que necesitamos para realizar un pedido
         -Generamos el id de ese pedido mediante la llamada al método generaIdPedido anterior
         -Lo asociamos a un cliente
@@ -413,9 +420,29 @@ public class Tienda2026 {
         -Hace falta rellenar el ArrayList del pedido*/
         }
         if (cestaCompra.size() > 0) {//tambien valdria (!cestaCompra.isEmpty())
-            Pedido p = new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra);
-            pedidos.add(p);
+            System.out.println("Este es tu pedido");
+            double totalPedido = 0;
+            for (LineaPedido l : cestaCompra) {
 
+                System.out.println("");
+
+                /*  totalLinea = l.getUnidades() * articulos.get(l.getIdArticulo()).getPvp();
+                totalPedido += totalLinea;
+                System.out.println(l.getIdArticulo() + "-"
+                        + articulos.get(l.getIdArticulo()).getDescripcion() + "- " + l.getUnidades()
+                        + " - " + articulos.get(l.getIdArticulo()).getPvp());
+                System.out.println("El total del precio es " + totalPedido);*/
+            }
+
+            System.out.println("Procedemos con la compra (SI/NO) ");
+            String respuesta = sc.next();
+            if (respuesta.equalsIgnoreCase("SI")) {
+                Pedido p = new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra);
+                pedidos.add(p);
+                for (LineaPedido l : cestaCompra) {
+                    articulos.get(l.getIdArticulo()).setExistencias(articulos.get(l.getIdArticulo()).getExistencias() - l.getUnidades());
+                }
+            }
         }
     }
 
@@ -432,11 +459,11 @@ public class Tienda2026 {
     private void listadoPedido() {
         System.out.println("Vamos a mostrar los pedidos de la tienda: ");
         for (Pedido p : pedidos) {
-            System.out.println(p);
+            System.out.println(p + "- Total: " + totalPedido(p));
         }
     }
 
-    private void totalPedido() {
+    private void totalP() {
 
     }
 
@@ -449,7 +476,10 @@ public class Tienda2026 {
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Ordenar con STREAMS">
     private void ordenarConStream() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        System.out.println("Listado de pedidos ordenados de mayor a menor total: ");
+        System.out.println();
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedido(p))).forEach(p->System.out.println(pedidos+" - "+ totalPedido(p)));
+        
     }
 //</editor-fold>
 }
