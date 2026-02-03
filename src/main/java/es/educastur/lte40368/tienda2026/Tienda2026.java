@@ -352,6 +352,9 @@ public class Tienda2026 {
             //System.out.print("\n" + a.getidArticulo() + "/" + a.getdescripción() + "/" + a.getexistencias() + "/" + a.getpvp());
 
         }
+        
+        
+                
         /*
         values: Muestra los articulos y keyset muestra la clave pricipal 
          */
