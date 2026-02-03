@@ -36,7 +36,7 @@ public class MetodosAuxiliaresTest {
         assertFalse(MetodosAuxiliares.esInt("55555555555555555555555555"));
         assertTrue(MetodosAuxiliares.esInt("-5"));
         assertFalse(MetodosAuxiliares.esInt("5.5"));
-        assertFalse(MetodosAuxiliares.esInt("sadasda"));;
+        assertFalse(MetodosAuxiliares.esInt("sadasda"));
     }
     /**
      * Test para esDouble
@@ -46,7 +46,7 @@ public class MetodosAuxiliaresTest {
         assertTrue(MetodosAuxiliares.esDouble("5"));
         assertTrue(MetodosAuxiliares.esDouble("-5"));
         assertTrue(MetodosAuxiliares.esDouble("5.5"));
-        assertFalse(MetodosAuxiliares.esDouble("sadasda"));;
+        assertFalse(MetodosAuxiliares.esDouble("sadasda"));
     }
     /**
      * Test para validarDni
@@ -56,7 +56,7 @@ public class MetodosAuxiliaresTest {
         assertTrue(MetodosAuxiliares.validarDni("80580845T"));
         assertTrue(MetodosAuxiliares.validarDni("36347775R"));
         assertFalse(MetodosAuxiliares.validarDni("36347375B"));
-        assertFalse(MetodosAuxiliares.validarDni("36349975Y"));;
+        assertFalse(MetodosAuxiliares.validarDni("36349975Y"));
     }
     /**
      * Test of calcularLetraDni method, of class MetodosAuxiliares.
