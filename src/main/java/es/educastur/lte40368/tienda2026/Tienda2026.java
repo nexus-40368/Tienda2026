@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Scanner;
+import java.util.SortedMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,15 @@ public class Tienda2026 {
         t2026.cargaDatos();
 
         t2026.menu();
+        uno();
+        // dos();
+        // tres();
+        //cuatro();
+        //cinco();
+    }
+
+    private static void uno() {
+
     }
 
     //<editor-fold defaultstate="collapsed" desc="metodos">
@@ -252,11 +262,6 @@ public class Tienda2026 {
                     listadoPedido();
                     break;
                 }
-                case 3: {
-                    Pedido p;
-                    break;
-                }
-
             }
 
         } while (opcion != 9);
@@ -345,7 +350,22 @@ public class Tienda2026 {
         for (Articulo a : articulos.values()) {
             System.out.println(a);
             //System.out.print("\n" + a.getidArticulo() + "/" + a.getdescripción() + "/" + a.getexistencias() + "/" + a.getpvp());
+
         }
+        /*
+        values: Muestra los articulos y keyset muestra la clave pricipal 
+         */
+        System.out.println("\n");
+        articulos.values().stream().forEach(a -> System.out.println(a));
+        System.out.println("");
+        ArrayList<Articulo> articulosAux = new ArrayList(articulos.values());
+        articulosAux.stream()
+                //Predicado se usa para un metodo
+                .filter(a -> a.getPvp() < 100)
+                // se usa para los atributos
+                .sorted(Comparator.comparing(Articulo::getPvp))
+                //bucle que recorre 
+                .forEach(a -> System.out.println(a));
     }
 //</editor-fold>
 
@@ -457,10 +477,24 @@ public class Tienda2026 {
         Pedido p = new Pedido(generaIdPedido(idCliente), clientes.get(idCliente), LocalDate.now(), cestaCompra);
         pedidos.add(p);*/
     private void listadoPedido() {
-        System.out.println("Vamos a mostrar los pedidos de la tienda: ");
+        System.out.println("");
         for (Pedido p : pedidos) {
             System.out.println(p + "- Total: " + totalPedido(p));
         }
+
+        /* System.out.println("\n");
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedido(p)))
+                .forEach(p->System.out.println(p + "- Total: " + totalPedido(p)));
+    
+        System.out.println("\n");
+        pedidos.stream().sorted(Comparator.comparing(p->totalPedido((Pedido)p)).reversed())
+                .forEach(p->System.out.println(p + "- Total: " + totalPedido(p)));
+        
+        
+        System.out.println("\n");
+        pedidos.stream().filter(p->totalPedido(p)>1000)
+                .sorted(Comparator.comparing(p->totalPedido((Pedido)p)))
+                .forEach(p->System.out.println(p + "- Total: " + totalPedido(p)));*/
     }
 
     private void totalP() {
@@ -476,10 +510,8 @@ public class Tienda2026 {
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Ordenar con STREAMS">
     private void ordenarConStream() {
-        System.out.println("Listado de pedidos ordenados de mayor a menor total: ");
-        System.out.println();
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedido(p))).forEach(p->System.out.println(pedidos+" - "+ totalPedido(p)));
-        
+        throw new UnsupportedOperationException("Not supported yet.");
+
     }
 //</editor-fold>
 }
