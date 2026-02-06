@@ -35,15 +35,86 @@ public class Tienda2026 {
         Tienda2026 t2026 = new Tienda2026();
         t2026.cargaDatos();
 
-        t2026.menu();
-        uno();
-        // dos();
-        // tres();
-        //cuatro();
-        //cinco();
+        // t2026.menu();
+        // t2026.uno();
+        // t2026.dos();
+        t2026.tres();
+        //t2026.cuatro();
+        //t2026.cinco();
     }
-
-    private static void uno() {
+      //METODO SELECIONAR UNA SECCION POR TECLADO 
+    private void uno() {
+        String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
+        System.out.println("Selecion a listar");
+        String sec = sc.nextLine();
+        System.out.println("ARTICULOS DE LA SECCION" + seccion[Integer.parseInt(sec)] +":" );
+      // DOS FORMA DE RESOLVER
+      // 1 BUCLE FOR-EACH
+       for(Articulo a:articulos.values()){
+            if (a.getIdArticulo().startsWith(sec)){
+                System.out.println(a);
+            }
+        }
+        System.out.println("");
+        
+        //2 CON STREAMS ES MEJOR  
+        articulos.values().stream()
+                .filter(a->a.getIdArticulo().startsWith(sec))
+                .forEach(a->System.out.println(a));
+    }
+    private void dos() {
+       String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
+    }
+    //METODOS PEDIDOS DE UN CLIENTE Y TOTAL GASTADO
+    private void tres() {
+        sc.nextLine();
+        System.out.println("Introduce un dni");
+        String dni;
+        do {
+            System.out.println("DNI (id) CLIENTE:");
+            dni = sc.nextLine().toUpperCase();
+        } while (!MetodosAuxiliares.validarDni(dni));
+        if (clientes.containsKey(dni)) {
+            float total = 0;
+            System.out.println("Pedidos Clientes " + clientes.get(dni).getNombre()+ ":");
+            for (Pedido p : pedidos) {
+                if (p.getClientePedido().getIdCliente().equals(dni)) {
+                    System.out.println(p + "\tTotal: " + totalPedido(p));
+                    total += totalPedido(p);
+                }
+            }
+            System.out.println("\t total gastado: " + total);
+           }else{
+            System.out.println("El cliente no exixste:");
+        }
+    }
+   //METODO LISTADO DE TODOS LOS ARTICULOS SEGUN LAS UNIDADES VENDIDAS
+    private void cuatro() {
+        System.out.println("LISTADO DE ARTICULOS - UNIDADES VENDIDAS: \n");
+        articulos.values().stream()
+                .sorted(Comparator.comparing(a -> unidadesVendidaas((Articulo) a)).reversed())
+                .forEach(a -> System.out.println("\t" + a.getDescripcion() + "\t VENDIDAS "+unidadesVendidaas(a)));
+        // NOTA: PARA QUE ESTE METODO FUNCIONE HAY QUE CREAR UN METODO UNIDADES VENDIAS Y LLAMARLO 
+    }
+    //METODOS PARA MOSTRAR CLIENTES SIN PEDIDOS 
+    private void cinco() {
+        ArrayList<Cliente> clientesSin = new ArrayList();
+        for (Cliente c : clientes.values()) {
+            int cont = 0;
+            for (Pedido p : pedidos) {
+                if (p.getClientePedido().equals(c)) {
+                    cont++;
+                    break;
+                }
+            }
+            if (cont == 0) {
+                clientesSin.add(c);
+            }
+        }
+        System.out.println("clientes sin pedidos:\n");
+        for (Cliente c : clientesSin) {
+            System.out.println(c);
+        }
 
     }
 
@@ -58,6 +129,18 @@ public class Tienda2026 {
                     + articulos.get(idArticulo).getDescripcion());
         }
 
+    }
+    // METODO UNIDADES VENDIDAS PARA DETERMINAR LOS ARTICULOS VENDIDOS 
+    private int unidadesVendidaas (Articulo a){
+        int c=0;
+        for (Pedido p:pedidos){
+            for (LineaPedido l:p.getCestaCompra()){
+                if (l.getIdArticulo().equals(a.getIdArticulo())){
+                    c+=l.getUnidades();
+                }
+            }
+        }
+        return c;
     }
 
     public String generaIdPedido(String idCliente) {
@@ -352,9 +435,7 @@ public class Tienda2026 {
             //System.out.print("\n" + a.getidArticulo() + "/" + a.getdescripción() + "/" + a.getexistencias() + "/" + a.getpvp());
 
         }
-        
-        
-                
+
         /*
         values: Muestra los articulos y keyset muestra la clave pricipal 
          */
