@@ -251,7 +251,6 @@ public class Tienda2026 {
                 .filter(l -> l.getArticulo().equals(a)))
                 .mapToInt(LineaPedido::getUnidades).sum();
     }
-
     public void stream() {
         System.out.println("Unidades vendidas");
         for (Articulo a : articulos.values()) {
@@ -263,9 +262,7 @@ public class Tienda2026 {
             }
             System.out.println(a + " - " + total);
         }
-
     }
-
     public void contarPedidos() {
         long numPedios = pedidos.stream().filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
                 .count();
@@ -273,7 +270,6 @@ public class Tienda2026 {
                 =pedidos.stream()
                         .collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
     }
-
     //muestra los pedidos de una seccion de los cliente que lo han comprado
     public void stream1() {
         for (Cliente c : clientes.values()) {
@@ -289,7 +285,6 @@ public class Tienda2026 {
     //---------------------------------------------------------------------------
     //---------------------------------------------------------------------------
     //---------------------------------------------------------------------------
-
     public void menu() {
         int opcion;
         do {
@@ -302,7 +297,6 @@ public class Tienda2026 {
             System.out.println("\t\t\t\t6 - ORDENAR COLECCIONES CON STREAMS");
             System.out.println("\t\t\t\t9 - SALIR");
             System.out.println("\t\t\t\t¿Qué opción quieres ejecurtar?");
-
             opcion = sc.nextInt();
 
             switch (opcion) {
@@ -330,11 +324,8 @@ public class Tienda2026 {
                     ordenarConStream();
                     break;
                 }
-
             }
-
         } while (opcion != 9);
-
         /* Estamos creando un menú de opciones, dichas opciones son introducidas por teclado y están contenidas en los diferentes métodos para actualizar la información de la agenda
           - Se debe declarar una variable de tipo int para poder navegar en el menú
           - Se declaran "souts" para hacer visibles las posibles opciones
@@ -345,7 +336,6 @@ public class Tienda2026 {
           4- Permite borrar un contacto que ya no necesite
           9- Permite salir del bucle del menú*/
     }
-
     //<editor-fold defaultstate="collapsed" desc="Menú Artículos">
     public void menuArticulo() {
         int opcion;
@@ -357,9 +347,7 @@ public class Tienda2026 {
             System.out.println("\t\t\t\t4 - LISTAR ARTICULOS");
             System.out.println("\t\t\t\t9 - SALIR");
             System.out.println("\t\t\t\t¿Qué opción quieres ejecurtar?");
-
             opcion = sc.nextInt();
-
             switch (opcion) {
                 case 1: {
                     altaArticulo();
@@ -377,13 +365,10 @@ public class Tienda2026 {
                     listarArticulos();
                     break;
                 }
-
             }
-
         } while (opcion != 9);
     }
 //</editor-fold>
-
     //<editor-fold defaultstate="collapsed" desc="Menú Cliente">
     public void menuCliente() {
         int opcion;
@@ -421,7 +406,6 @@ public class Tienda2026 {
         } while (opcion != 9);
     }
 //</editor-fold>
-
     //<editor-fold defaultstate="collapsed" desc="Menú Pedido">
     public void menuPedido() {
         int opcion;
@@ -449,7 +433,6 @@ public class Tienda2026 {
         } while (opcion != 9);
     }
 //</editor-fold>
-
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Listado tradicional">
     public void listarColecciones() {
@@ -473,7 +456,6 @@ public class Tienda2026 {
         }
     }
 //</editor-fold>
-
     //<editor-fold defaultstate="collapsed" desc="Gestión Artículos">
     private void altaArticulo() {
         //DEBEMOS PEDIR LOS 4 ATRIBUTOS POR TECLADO Y LUEGO AÑADIRLO AL HASHMAP
@@ -551,20 +533,13 @@ public class Tienda2026 {
                 .forEach(a -> System.out.println(a));
     }
 //</editor-fold>
-
     //<editor-fold defaultstate="collapsed" desc="Gestión de Clientes">
     private void altaCliente() {
-
     }
-
     private void bajaCliente() {
-
     }
-
     private void modificarDatos() {
-
     }
-
     private void listarClientes() {
         System.out.println("Vamos a mostrar todos los clientes de la tienda: ");
         for (Cliente c : clientes.values()) {
