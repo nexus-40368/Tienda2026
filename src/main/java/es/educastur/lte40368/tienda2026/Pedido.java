@@ -14,19 +14,13 @@ import java.util.ArrayList;
 public class Pedido {
     private String idPedido;
     private Cliente clientePedido;
-    private final LocalDate fachaPedido;
+    private  LocalDate fechaPedido;
     private ArrayList <LineaPedido> cestaCompra;
 
-    public Pedido(String idPedido, String clientePedido, LocalDate fachaPedido, ArrayList<LineaPedido> cestaCompra) {
-        this.idPedido = idPedido;
-        this.fachaPedido = fachaPedido;
-        this.cestaCompra = cestaCompra;
-    }
-
-    public Pedido(String idPedido, Cliente clientePedido, LocalDate fachaPedido, ArrayList<LineaPedido> cestaCompra) {
+    public Pedido(String idPedido, Cliente clientePedido, LocalDate fechaPedido, ArrayList<LineaPedido> cestaCompra) {
         this.idPedido = idPedido;
         this.clientePedido = clientePedido;
-        this.fachaPedido = fachaPedido;
+        this.fechaPedido = fechaPedido;
         this.cestaCompra = cestaCompra;
     }
 
@@ -37,12 +31,7 @@ public class Pedido {
     public void setIdPedido(String idPedido) {
         this.idPedido = idPedido;
     }
-    public ArrayList<LineaPedido> getCestaCompra() {
-        return cestaCompra;
-    }
-    public void setCestaCompra(ArrayList<LineaPedido> cestaCompra) {
-        this.cestaCompra = cestaCompra;
-    }
+
     public Cliente getClientePedido() {
         return clientePedido;
     }
@@ -50,15 +39,26 @@ public class Pedido {
     public void setClientePedido(Cliente clientePedido) {
         this.clientePedido = clientePedido;
     }
+
+    public LocalDate getFechaPedido() {
+        return fechaPedido;
+    }
+
+    public void setFechaPedido(LocalDate fachaPedido) {
+        this.fechaPedido = fechaPedido;
+    }
+
+    public ArrayList<LineaPedido> getCestaCompra() {
+        return cestaCompra;
+    }
+
+    public void setCestaCompra(ArrayList<LineaPedido> cestaCompra) {
+        this.cestaCompra = cestaCompra;
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Pedido{");
-        sb.append("idPedido=").append(idPedido);
-        sb.append(", clientePedido=").append(clientePedido);
-        sb.append(", fachaPedido=").append(fachaPedido);
-        sb.append(", cestaCompra=").append(cestaCompra);
-        sb.append('}');
-        return sb.toString();
+        return idPedido + " - " + clientePedido + " - " + fachaPedido + " - " + cestaCompra;
     }
+   
 }
