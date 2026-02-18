@@ -219,7 +219,7 @@ public class Tienda2026 {
     private void metodosStream(){
            //EJEMPLOS SENCILLOS CON filter() - sorted() - forEach()
     
-        // ARTICULOS DE MENOS DE 100€ ORDENADOS POR PRECIO DE - A +
+        // ARTICULOS DE MENOS DE 100€ ORDENADOS POR PRECIO DwE - A +
         articulos.values().stream()
                 .filter(a->a.getPvp()<100)
                 .sorted(Comparator.comparing(Articulo::getPvp))
