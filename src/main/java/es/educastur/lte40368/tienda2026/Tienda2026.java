@@ -87,14 +87,16 @@ public class Tienda2026 {
             dni = sc.nextLine().toUpperCase();
         } while (!MetodosAuxiliares.validarDni(dni));
         if (clientes.containsKey(dni)) {
-            float total = 0;
+       double total=0;
             System.out.println("Pedidos Clientes " + clientes.get(dni).getNombre() + ":");
-            for (Pedido p : pedidos) {
+           /*for (Pedido p : pedidos) {
                 if (p.getClientePedido().getIdCliente().equals(dni)) {
                     System.out.println(p + "\tTotal: " + totalPedido(p));
                     total += totalPedido(p);
                 }
-            }
+            }*/
+                  
+                   
             System.out.println("\t total gastado: " + total);
         } else {
             System.out.println("El cliente no exixste:");
@@ -176,7 +178,7 @@ public class Tienda2026 {
     private double totalPedido(Pedido p) { //Cambiamos a public para probarlo en los test de JUNIT 5
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
-            totalPedido += l.getUnidades() * articulos.get(l.getArticulo()).getPvp();
+            totalPedido += l.getUnidades() * l.getArticulo().getPvp();
             //SE CAMBIA DE l.getIdArticulo a l.getArticulo porque cambiamos la clase de LineaPedido, NOS PERMITE ACCEDER AL ARTICULO DIRECTAMENTE
         }
         return totalPedido;
@@ -190,20 +192,20 @@ public class Tienda2026 {
         return totalPedido;
     }*/
     public void cargaDatos() {
-        clientes.put("80580845T", new Cliente("80580845T", "ANA ", "658111111", "ana@gmail.com"));
+        clientes.put("80580845T", new Cliente("80580845T", "ANA", "658111111", "ana@gmail.com"));
         clientes.put("36347775R", new Cliente("36347775R", "LOLA", "649222222", "lola@gmail.com"));
         clientes.put("63921307Y", new Cliente("63921307Y", "JUAN", "652333333", "juan@gmail.com"));
         clientes.put("02337565Y", new Cliente("02337565Y", "EDU", "634567890", "edu@gmail.com"));
 
-        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST ", 0, 15));
-        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD  ", 5, 18));
-        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB  ", 15, 80));
+        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST", 0, 15));
+        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD", 5, 18));
+        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB ", 15, 80));
         articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
         articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
-        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800 ", 2, 200));
-        articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300 ", 5, 80));
-        articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22 ", 5, 100));
-        articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28 ", 5, 180));
+        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800", 2, 200));
+        articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300", 5, 80));
+        articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22", 5, 100));
+        articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28", 5, 180));
         articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
 
         LocalDate hoy = LocalDate.now();
@@ -314,7 +316,19 @@ public class Tienda2026 {
                 ));
         for (Articulo a:unidadesPorArticulo.keySet()){
             System.out.println(a.getDescripcion() + " - " + unidadesPorArticulo.get(a));
+            
+            
+     //
+         
+      
         }
+        System.out.println("INTRODUCE UN DNI DE CLIENTE");
+        String dni=sc.nextLine();
+        double total= pedidos.stream()
+                .filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase(dni))
+                .mapToDouble(p ->totalPedido(p))
+                .sum();
+        System.out.println(total);
     }
     
     
