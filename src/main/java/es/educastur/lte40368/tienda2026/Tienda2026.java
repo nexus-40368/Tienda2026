@@ -4,6 +4,7 @@
 package es.educastur.lte40368.tienda2026;
 
 import java.time.LocalDate;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -33,25 +34,35 @@ public class Tienda2026 {
         articulos = new HashMap();
         clientes = new HashMap();
     }
+    
+    public ArrayList<Pedido> getPedidos() {
+        return pedidos;
+    }
 
+    public HashMap<String, Articulo> getArticulos() {
+        return articulos;
+    }
+
+    public HashMap<String, Cliente> getClientes() {
+        return clientes;
+    }
     public static void main(String[] args) {
         Tienda2026 t2026 = new Tienda2026();
         t2026.cargaDatos();
         // t2026.stream1(); 
-       // System.out.println(t2026.uniVendArticulos(t2026.articulos.get("4-33")));
+        // System.out.println(t2026.uniVendArticulos(t2026.articulos.get("4-33")));
         //System.out.println(t2026.uniVendArticulos2(t2026.articulos.get("4-33")));
-       // System.out.println(t2026.uniVendArticulos3(t2026.articulos.get("4-33")));
-        t2026.metodosStream();
+        // System.out.println(t2026.uniVendArticulos3(t2026.articulos.get("4-33")));
+        //t2026.metodosStream();
         // t2026.menu();
-        // t2026.uno();
-        // t2026.dos();
+         //t2026.uno();
+       // t2026.dos();
         //  t2026.tres();
-        //t2026.cuatro();
-        //t2026.cinco();
+       // t2026.cuatro();
+        t2026.cinco();
     }
     //METODO SELECIONAR UNA SECCION POR TECLADO 
-
-    private void uno() {
+    private void uno1() {
         String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
         System.out.println("Selecion a listar");
         String sec = sc.nextLine();
@@ -64,21 +75,17 @@ public class Tienda2026 {
                 System.out.println(a);
             }
         }
-
         System.out.println("");
-
         //2 CON STREAMS ES MEJOR  
         articulos.values().stream()
                 .filter(a -> a.getIdArticulo().startsWith(sec))
                 .forEach(a -> System.out.println(a));
     }
-
-    private void dos() {
+    private void dos1() {
         String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
     }
-
     //METODOS PEDIDOS DE UN CLIENTE Y TOTAL GASTADO
-    private void tres() {
+    private void tres1() {
         sc.nextLine();
         System.out.println("Introduce un dni");
         String dni;
@@ -87,33 +94,30 @@ public class Tienda2026 {
             dni = sc.nextLine().toUpperCase();
         } while (!MetodosAuxiliares.validarDni(dni));
         if (clientes.containsKey(dni)) {
-       double total=0;
+            double total = 0;
             System.out.println("Pedidos Clientes " + clientes.get(dni).getNombre() + ":");
-           /*for (Pedido p : pedidos) {
+            /*for (Pedido p : pedidos) {
                 if (p.getClientePedido().getIdCliente().equals(dni)) {
                     System.out.println(p + "\tTotal: " + totalPedido(p));
                     total += totalPedido(p);
                 }
             }*/
-                  
-                   
+
             System.out.println("\t total gastado: " + total);
         } else {
             System.out.println("El cliente no exixste:");
         }
     }
     //METODO LISTADO DE TODOS LOS ARTICULOS SEGUN LAS UNIDADES VENDIDAS
-
-    private void cuatro() {
+    private void cuatro1() {
         System.out.println("LISTADO DE ARTICULOS - UNIDADES VENDIDAS: \n");
         articulos.values().stream()
                 .sorted(Comparator.comparing(a -> unidadesVendidaas((Articulo) a)).reversed())
                 .forEach(a -> System.out.println("\t" + a.getDescripcion() + "\t VENDIDAS " + unidadesVendidaas(a)));
         // NOTA: PARA QUE ESTE METODO FUNCIONE HAY QUE CREAR UN METODO UNIDADES VENDIAS Y LLAMARLO 
     }
-
     //METODOS PARA MOSTRAR CLIENTES SIN PEDIDOS 
-    private void cinco() {
+    private void cinco1() {
         ArrayList<Cliente> clientesSin = new ArrayList();
         for (Cliente c : clientes.values()) {
             int cont = 0;
@@ -131,22 +135,18 @@ public class Tienda2026 {
         for (Cliente c : clientesSin) {
             System.out.println(c);
         }
-
     }
-
     //<editor-fold defaultstate="collapsed" desc="metodos">
-    private void stock(String idArticulo, int unidades) throws StockCero, StockInsuficiente {
-        if (articulos.get(idArticulo).getExistencias() == 0) {
+    private void stock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
+        if (a.getExistencias() == 0) {
             throw new StockCero("0 unidades disponibles"
-                    + articulos.get(idArticulo).getDescripcion());
+                    + a.getDescripcion());
         }
-        if (articulos.get(idArticulo).getExistencias() < unidades) {
-            throw new StockInsuficiente("Solo hay " + articulos.get(idArticulo).getExistencias()
-                    + articulos.get(idArticulo).getDescripcion());
+        if (a.getExistencias() < unidades) {
+            throw new StockInsuficiente("Solo hay " + a.getExistencias()
+                    + a.getDescripcion());
         }
-
     }
-
     // METODO UNIDADES VENDIDAS PARA DETERMINAR LOS ARTICULOS VENDIDOS 
     private int unidadesVendidaas(Articulo a) {
         int c = 0;
@@ -159,7 +159,6 @@ public class Tienda2026 {
         }
         return c;
     }
-
     public String generaIdPedido(String idCliente) {
         int contador = 0;
         String nuevoId; // vble String para ir construyendo un nuevo idPedido
@@ -174,8 +173,7 @@ public class Tienda2026 {
         return nuevoId;
         //</editor-fold>
     }
-
-    private double totalPedido(Pedido p) { //Cambiamos a public para probarlo en los test de JUNIT 5
+    public double totalPedido(Pedido p) { //Cambiamos a public para probarlo en los test de JUNIT 5
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
             totalPedido += l.getUnidades() * l.getArticulo().getPvp();
@@ -183,7 +181,6 @@ public class Tienda2026 {
         }
         return totalPedido;
     }
-
     /* private double totalPedido(Pedido p) {
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
@@ -199,7 +196,7 @@ public class Tienda2026 {
 
         articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST", 0, 15));
         articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD", 5, 18));
-        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB ", 15, 80));
+        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB ", 0, 80));
         articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
         articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
         articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800", 2, 200));
@@ -207,7 +204,6 @@ public class Tienda2026 {
         articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22", 5, 100));
         articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28", 5, 180));
         articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
-
         LocalDate hoy = LocalDate.now();
         pedidos.add(new Pedido("80580845T-001/2025", clientes.get("80580845T"), hoy.minusDays(1), new ArrayList<>(List.of(new LineaPedido(articulos.get("1-11"), 3), new LineaPedido(articulos.get("4-22"), 3)))));
         pedidos.add(new Pedido("80580845T-002/2025", clientes.get("80580845T"), hoy.minusDays(2), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-11"), 3), new LineaPedido(articulos.get("4-22"), 2), new LineaPedido(articulos.get("4-33"), 4)))));
@@ -216,99 +212,192 @@ public class Tienda2026 {
         pedidos.add(new Pedido("63921307Y-001/2025", clientes.get("63921307Y"), hoy.minusDays(4), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
 
     }
+   public double totalCliente2(Cliente c){
+        double total =0;
+       total= pedidos.stream().filter(p -> p .getClientePedido().equals(c))
+                .flatMap(p -> p .getCestaCompra().stream())
+                 .mapToDouble(l -> l.getUnidades()* l.getArticulo().getPvp()).sum();
+        return  total;
+    }
+    private void uno() {
+        
+        for (Cliente c : clientes.values()) {
+            pedidos.stream().sorted(Comparator.comparing(p -> totalCliente2((Cliente)c)).reversed());
+                System.out.println(c + "- Total: " + totalCliente2(c));
+        }
+        
+              
+    }
+    private void dos() {
+        System.out.println("INTRODUCE UN NUMERO PARA UNA SECCION"
+                + "\n1- PERIFERICOS"
+                + "\n2- ALMACENAMIENTO"
+                + "\n3- IMPRESORA"
+                + "\n4- MONITORES");
+        System.out.println("\n");
+        String sec = sc.nextLine();
+        articulos.values().stream()
+                .filter(a -> a.getIdArticulo().startsWith(sec) && a.getExistencias() > 0)
+                .sorted(Comparator.comparing(Articulo::getPvp).reversed())
+                .forEach(a -> System.out.println(a));
 
+        /*int unidades = pedidos.stream().filter(p -> p.getArtic)
+                    .flatMap(p -> p.getCestaCompra().stream()).filter(l -> l.getArticulo().equals(articulos.get("4-22")))
+                    .mapToInt(LineaPedido::getUnidades).sum();
+
+            System.out.println(c.getNombre() + ": " + unidades + " de " + articulos.get("4-22").getDescripcion());*/
+    }
+
+    private void tres() {
     
-    private void metodosStream(){
-           //EJEMPLOS SENCILLOS CON filter() - sorted() - forEach()
-    
+    }
+
+    private void cuatro() {
+      double total
+               //Solucion
+              // localDate fecha1= LocalDate.now().minusDays(5)
+              // localDate fecha2= LocalDate.now()
+              //.filter(p.getFechaPedido. isAfter(fecha1)(
+              =  pedidos.stream().filter(p -> p.getFechaPedido()== LocalDate.of(2026, 02, 14))
+                        .flatMap(p -> p.getCestaCompra().stream())
+                        .mapToDouble(l ->  l.getUnidades() *l.getArticulo().getPvp()).sum();
+          System.out.println("\nTotal facturado entre " + "fecha1" + "Y" + "fecha2" + ": " + total );
+    }
+
+    private void cinco() {
+       
+        
+            double total = 
+               pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
+                        .mapToDouble(l ->  l.getUnidades() *l.getArticulo().getPvp()/pedidos.size()).sum();
+             
+            System.out.println("IMPORTE MEDIO DE LA TIENDA " + total);
+            
+         }
+
+    private void metodosStream() {
+        //EJEMPLOS SENCILLOS CON filter() - sorted() - forEach()
+
         // ARTICULOS DE MENOS DE 100€ ORDENADOS POR PRECIO DwE - A +
         articulos.values().stream()
-                .filter(a->a.getPvp()<100)
+                .filter(a -> a.getPvp() < 100)
                 .sorted(Comparator.comparing(Articulo::getPvp))
-                .forEach(a->System.out.println(a));
-    
+                .forEach(a -> System.out.println(a));
+
         //PEDIDOS ORDENADOS POR EL IMPORTE TOTAL DEL PEDIDO DE - A + (usamos el método auxiliar totalPedido()) 
         System.out.println("\n");
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedido(p)))
-                .forEach(p->System.out.println(p + "- Total: " + totalPedido(p)));
-    
+        pedidos.stream().sorted(Comparator.comparing(p -> totalPedido(p)))
+                .forEach(p -> System.out.println(p + "- Total: " + totalPedido(p)));
+
         //PEDIDOS ORDENADOS POR EL IMPORTE TOTAL DEL PEDIDO DE + A - (usamos el método auxiliar totalPedido()) 
         System.out.println("\n");
-        pedidos.stream().sorted(Comparator.comparing(p->totalPedido((Pedido)p)).reversed())
-                .forEach(p->System.out.println(p + "- Total: " + totalPedido(p)));
-        
-                
+        pedidos.stream().sorted(Comparator.comparing(p -> totalPedido((Pedido) p)).reversed())
+                .forEach(p -> System.out.println(p + "- Total: " + totalPedido(p)));
+
         //PEDIDOS DE MÁS DE 1000€ (filter) ORDENADOS POR LA FECHA DEL PEDIDO DE - A + 
         System.out.println("\n");
-                pedidos.stream().filter(p->totalPedido(p)>1000)
+        pedidos.stream().filter(p -> totalPedido(p) > 1000)
                 .sorted(Comparator.comparing(Pedido::getFechaPedido))
-                .forEach(p->System.out.println(p + "- Total: " + p.getFechaPedido()));
-        
-       
-    //EJERCICIOS CON MÉTODOS DEL API PARA REALIZAR CALCULOS count() map() mapToInt() .collect(Collectors.groupingBy) ...
-        
-        
+                .forEach(p -> System.out.println(p + "- Total: " + p.getFechaPedido()));
+
+        //EJERCICIOS CON MÉTODOS DEL API PARA REALIZAR CALCULOS count() map() mapToInt() .collect(Collectors.groupingBy) ...
         //CONTABILIZAR LOS PEDIDOS DE UN DETERMINADO CLIENTE - PODRÍA PEDIR NOMBRE O DNI POR TECLADO PERO LO HARÉ PARA UNO CONCRETO
         long numPedidos = pedidos.stream()
                 .filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
                 .count();
         System.out.println("\n" + numPedidos + "\n");
         //LAS FUNCIONES TIPO count() counting() almacenan resultados en variables de tipo long 
-                
+
         //CONTABILIZAR CUANTOS PEDIDOS HAY POR CLIENTE - PARA LAS AGRUPACIONES SON IDEALES LOS MAPAS PORQUE PUEDEN CONTENER 2 DATOS
-        Map<Cliente, Long> numPedidosPorCliente =
-        pedidos.stream()
-                .collect(Collectors.groupingBy(Pedido::getClientePedido,Collectors.counting()));
-       
-        for (Cliente c:numPedidosPorCliente.keySet()){
-            System.out.println(c + " - " + numPedidosPorCliente.get(c));    
+        Map<Cliente, Long> numPedidosPorCliente
+                = pedidos.stream()
+                        .collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
+
+        for (Cliente c : numPedidosPorCliente.keySet()) {
+            System.out.println(c + " - " + numPedidosPorCliente.get(c));
         }
-                
+
         // TOTAL DE UNIDADES VENDIDAS DE UN ARTICULO EN TODOS LOS PEDIDOS. PODEMOS APLICARLO AL 
         // MÉTODO UNIDADES VENDIDAS QUE HABÍA QUE HACER EN EL EJERCICIO 4 DE LA ÚLTIMA PRUEBA
-        System.out.println("\n"); 
-        for (Articulo a:articulos.values()){
-            int total=0;
-            for (Pedido p:pedidos){
-                total += p.getCestaCompra().stream().filter(l->l.getArticulo().equals(a))
-                .mapToInt(LineaPedido::getUnidades).sum();
+        System.out.println("\n");
+        for (Articulo a : articulos.values()) {
+            int total = 0;
+            for (Pedido p : pedidos) {
+                total += p.getCestaCompra().stream().filter(l -> l.getArticulo().equals(a))
+                        .mapToInt(LineaPedido::getUnidades).sum();
             }
             System.out.println(a + " - " + total);
         }
-        
- 
-    /****************************************************************************************
-        EJERCICIOS CON flatMap() para colecciones anidadas, nuestro caso
-        pues pedidos es un ArrayList de <Pedido> y dentro de cada Pedido
-        hay una cestaCompra, que es un ArrayList de <Lineapedido>
-        
-    *****************************************************************************************/
-      
-    //USUARIOS QUE HAN COMPRADO UN ARTÍCULO DETERMINADO incluyendo CUANTAS UNIDADES HAN COMPRADO 
-    //probamos con el artículo articulos.get("4-22") 
+
+        /**
+         * **************************************************************************************
+         * EJERCICIOS CON flatMap() para colecciones anidadas, nuestro caso pues
+         * pedidos es un ArrayList de <Pedido> y dentro de cada Pedido hay una
+         * cestaCompra, que es un ArrayList de <Lineapedido>
+         *
+         ****************************************************************************************
+         */
+        //USUARIOS QUE HAN COMPRADO UN ARTÍCULO DETERMINADO incluyendo CUANTAS UNIDADES HAN COMPRADO 
+        //probamos con el artículo articulos.get("4-22") 
         System.out.println("\n");
-        for (Cliente c:clientes.values()){
-            int unidades= pedidos.stream().filter(p-> p.getClientePedido().equals(c))
-                .flatMap(p -> p.getCestaCompra().stream()).filter(l->l.getArticulo().equals(articulos.get("4-22")))
-                .mapToInt(LineaPedido::getUnidades).sum();     
-             
+        for (Cliente c : clientes.values()) {
+            int unidades = pedidos.stream().filter(p -> p.getClientePedido().equals(c))
+                    .flatMap(p -> p.getCestaCompra().stream()).filter(l -> l.getArticulo().equals(articulos.get("4-22")))
+                    .mapToInt(LineaPedido::getUnidades).sum();
+
             System.out.println(c.getNombre() + ": " + unidades + " de " + articulos.get("4-22").getDescripcion());
-        }    
-        
-    //TODOS LOS ARTICULOS VENDIDOS, LOS ALMACENAMOS EN UN SET PARA EVITAR REPETICIONES
+        }
+
+        //TODOS LOS ARTICULOS VENDIDOS, LOS ALMACENAMOS EN UN SET PARA EVITAR REPETICIONES
         System.out.println("\n");
-        
-        Set <Articulo> articulosVendidos =
-                pedidos.stream()
-                .flatMap(p -> p.getCestaCompra().stream())
-                .map(LineaPedido::getArticulo)
-                .collect(Collectors.toSet());
-        
-        articulosVendidos.stream().forEach(a->System.out.println(a));
-       
-        
-    //TOTAL DE UNIDADES VENDIDAS DE TODOS LOS ARTÍCULOS usando flatMap()
+
+        Set<Articulo> articulosVendidos
+                = pedidos.stream()
+                        .flatMap(p -> p.getCestaCompra().stream())
+                        .map(LineaPedido::getArticulo)
+                        .collect(Collectors.toSet());
+
+        articulosVendidos.stream().forEach(a -> System.out.println(a));
+
+        //TOTAL DE UNIDADES VENDIDAS DE TODOS LOS ARTÍCULOS usando flatMap()
         System.out.println("\n");
+        Map<Articulo, Integer> unidadesPorArticulo
+                = pedidos.stream()
+                        .flatMap(p -> p.getCestaCompra().stream())
+                        .collect(Collectors.groupingBy(LineaPedido::getArticulo, Collectors.summingInt(LineaPedido::getUnidades)
+                        ));
+        for (Articulo a : unidadesPorArticulo.keySet()) {
+            System.out.println(a.getDescripcion() + " - " + unidadesPorArticulo.get(a));
+
+            //
+        }
+        System.out.println("INTRODUCE UN DNI DE CLIENTE");
+        String dni = sc.nextLine();
+        double total = pedidos.stream()
+                .filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase(dni))
+                .mapToDouble(p -> totalPedido(p))
+                .sum();
+        System.out.println(total);
+        /*     //ejercicio 1
+        pedidos.stream().forEach(p -> System.out.println(p));
+        //ejercicio 2 Mostrar todos los pedidos de un cliente cuyo DNI se pide por teclado.
+        System.out.println("DNI PARA VER LOS PEDIDOS DE ESE CLIENTE");
+        String dni = sc.nextLine();
+        pedidos.stream().filter(p -> p.getClientePedido().getIdCliente().equals(dni))
+                .forEach(p -> System.out.println(p));
+        //ejercio 3 Mostrar el total gastado por un cliente (DNI por teclado).
+        double total = pedidos.stream().filter(p -> p.getClientePedido().getIdCliente().equals(dni))
+                .mapToDouble(p -> totalPedido(p)).sum();
+        System.out.println("\nEL CLIENTE " + clientes.get(dni).getNombre()
+                + "TIENE UN TOTAL GASTADO :" + total);
+        //ejercico 4 Mostrar el número de pedidos de cada cliente usando groupingBy.
+        Map<Cliente, Long> numPedidosPorClientes
+                = pedidos.stream()
+                        .collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
+        Cliente cliente= clientes.get(dni);
+        System.out.println(cliente.getNombre() + " - " + numPedidosPorClientes.get(cliente));
+        //EJERCIOCIO 6 Mostrar el total de unidades vendidas en la tienda.
+            System.out.println("\n");
         Map<Articulo, Integer> unidadesPorArticulo =
         pedidos.stream()
                 .flatMap(p -> p.getCestaCompra().stream())
@@ -316,29 +405,13 @@ public class Tienda2026 {
                 ));
         for (Articulo a:unidadesPorArticulo.keySet()){
             System.out.println(a.getDescripcion() + " - " + unidadesPorArticulo.get(a));
-            
-            
-     //
-         
-      
-        }
-        System.out.println("INTRODUCE UN DNI DE CLIENTE");
-        String dni=sc.nextLine();
-        double total= pedidos.stream()
-                .filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase(dni))
-                .mapToDouble(p ->totalPedido(p))
-                .sum();
-        System.out.println(total);
+        }                                              */
     }
-    
-    
-    
+
     /*
     METODOS PARA CALCULAR LAS UNIDADES VENDIDAS DE UN ARTICULO 
     EN TODOS LOS PEDIDOS DE LA TIENDDA
      */
-    
-    
     private int uniVendArticulos(Articulo a) {
         int total = 0;
         for (Pedido p : pedidos) {
@@ -373,6 +446,7 @@ public class Tienda2026 {
                 .filter(l -> l.getArticulo().equals(a)))
                 .mapToInt(LineaPedido::getUnidades).sum();
     }
+
     public void stream() {
         System.out.println("Unidades vendidas");
         for (Articulo a : articulos.values()) {
@@ -385,16 +459,18 @@ public class Tienda2026 {
             System.out.println(a + " - " + total);
         }
     }
+
     public void contarPedidos() {
         long numPedios = pedidos.stream().filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase("80580845T"))
                 .count();
         Map<Cliente, Long> numPedidosPorcliente
-                =pedidos.stream()
+                = pedidos.stream()
                         .collect(Collectors.groupingBy(Pedido::getClientePedido, Collectors.counting()));
         for (Cliente c : numPedidosPorcliente.keySet()) {
             System.out.println(c + " - " + numPedidosPorcliente);
         }
     }
+
     //muestra los pedidos de una seccion de los cliente que lo han comprado
     public void stream1() {
         for (Cliente c : clientes.values()) {
@@ -402,9 +478,10 @@ public class Tienda2026 {
                     .flatMap(l -> l.getCestaCompra().stream())
                     .filter(l -> l.getArticulo().equals(articulos.get("4-22")))
                     .mapToInt(LineaPedido::getUnidades).sum();
-            System.out.println(c.getNombre()+ " : " + unidades);
+            System.out.println(c.getNombre() + " : " + unidades);
         }
     }
+
     //---------------------------------------------------------------------------
     //---------------------------------------------------------------------------
     //---------------------------------------------------------------------------
@@ -461,6 +538,7 @@ public class Tienda2026 {
           4- Permite borrar un contacto que ya no necesite
           9- Permite salir del bucle del menú*/
     }
+
     //<editor-fold defaultstate="collapsed" desc="Menú Artículos">
     public void menuArticulo() {
         int opcion;
@@ -495,6 +573,7 @@ public class Tienda2026 {
     }
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Menú Cliente">
+
     public void menuCliente() {
         int opcion;
         do {
@@ -532,6 +611,7 @@ public class Tienda2026 {
     }
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Menú Pedido">
+
     public void menuPedido() {
         int opcion;
         do {
@@ -560,6 +640,7 @@ public class Tienda2026 {
 //</editor-fold>
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Listado tradicional">
+
     public void listarColecciones() {
         System.out.println("Vamos a mostrar todos los clientes de la tienda: ");
         for (Cliente c : clientes.values()) {
@@ -582,6 +663,7 @@ public class Tienda2026 {
     }
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Gestión Artículos">
+
     private void altaArticulo() {
         //DEBEMOS PEDIR LOS 4 ATRIBUTOS POR TECLADO Y LUEGO AÑADIRLO AL HASHMAP
         Scanner sc = new Scanner(System.in);
@@ -659,12 +741,20 @@ public class Tienda2026 {
     }
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Gestión de Clientes">
+    public double totalCliente(Cliente c){
+        return pedidos.stream().filter(p-> p.getClientePedido().equals(c))
+                .mapToDouble(p -> totalPedido(p)).sum();
+    }
+    
     private void altaCliente() {
     }
+
     private void bajaCliente() {
     }
+
     private void modificarDatos() {
     }
+
     private void listarClientes() {
         System.out.println("Vamos a mostrar todos los clientes de la tienda: ");
         for (Cliente c : clientes.values()) {
@@ -698,7 +788,7 @@ public class Tienda2026 {
                 unidades = sc.nextInt();
 
                 try {
-                    stock(idArticulo, unidades);
+                    stock(articulos.get(idArticulo), unidades);
                     //cestaCompra.add(new LineaPedido(idArticulo, unidades));
 
                 } catch (StockCero ex) {
