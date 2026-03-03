@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class Pedido {
     private String idPedido;
     private Cliente clientePedido;
-    private  LocalDate fechaPedido;
+    private LocalDate fechaPedido;
     private ArrayList <LineaPedido> cestaCompra;
 
     public Pedido(String idPedido, Cliente clientePedido, LocalDate fechaPedido, ArrayList<LineaPedido> cestaCompra) {
@@ -58,7 +58,7 @@ public class Pedido {
 
     @Override
     public String toString() {
-        return idPedido + " - " + clientePedido + " - " + fachaPedido + " - " + cestaCompra;
+        return idPedido + " / " + clientePedido + " / " + fechaPedido + " / " + cestaCompra;
     }
    
 }

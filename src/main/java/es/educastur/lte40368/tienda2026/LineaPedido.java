@@ -35,7 +35,7 @@ class LineaPedido {
 
     @Override
     public String toString() {
-        return "LineaPedido{" + "articulo=" + articulo + ", unidades=" + unidades + '}';
+        return articulo.getDescripcion() + " = " + unidades;
     }
 
 
