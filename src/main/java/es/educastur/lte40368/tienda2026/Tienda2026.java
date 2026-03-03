@@ -3,6 +3,7 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -34,7 +36,7 @@ public class Tienda2026 {
         articulos = new HashMap();
         clientes = new HashMap();
     }
-    
+
     public ArrayList<Pedido> getPedidos() {
         return pedidos;
     }
@@ -46,21 +48,25 @@ public class Tienda2026 {
     public HashMap<String, Cliente> getClientes() {
         return clientes;
     }
+
     public static void main(String[] args) {
         Tienda2026 t2026 = new Tienda2026();
         t2026.cargaDatos();
+        t2026.pedidoOrden();
+        t2026.pedidoOrden();
         // t2026.stream1(); 
         // System.out.println(t2026.uniVendArticulos(t2026.articulos.get("4-33")));
         //System.out.println(t2026.uniVendArticulos2(t2026.articulos.get("4-33")));
         // System.out.println(t2026.uniVendArticulos3(t2026.articulos.get("4-33")));
         //t2026.metodosStream();
         // t2026.menu();
-         //t2026.uno();
-       // t2026.dos();
+        //t2026.uno();
+        // t2026.dos();
         //  t2026.tres();
-       // t2026.cuatro();
-        t2026.cinco();
+        // t2026.cuatro();
+        // t2026.cinco();
     }
+
     //METODO SELECIONAR UNA SECCION POR TECLADO 
     private void uno1() {
         String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
@@ -81,9 +87,11 @@ public class Tienda2026 {
                 .filter(a -> a.getIdArticulo().startsWith(sec))
                 .forEach(a -> System.out.println(a));
     }
+
     private void dos1() {
         String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
     }
+
     //METODOS PEDIDOS DE UN CLIENTE Y TOTAL GASTADO
     private void tres1() {
         sc.nextLine();
@@ -108,6 +116,7 @@ public class Tienda2026 {
             System.out.println("El cliente no exixste:");
         }
     }
+
     //METODO LISTADO DE TODOS LOS ARTICULOS SEGUN LAS UNIDADES VENDIDAS
     private void cuatro1() {
         System.out.println("LISTADO DE ARTICULOS - UNIDADES VENDIDAS: \n");
@@ -116,6 +125,7 @@ public class Tienda2026 {
                 .forEach(a -> System.out.println("\t" + a.getDescripcion() + "\t VENDIDAS " + unidadesVendidaas(a)));
         // NOTA: PARA QUE ESTE METODO FUNCIONE HAY QUE CREAR UN METODO UNIDADES VENDIAS Y LLAMARLO 
     }
+
     //METODOS PARA MOSTRAR CLIENTES SIN PEDIDOS 
     private void cinco1() {
         ArrayList<Cliente> clientesSin = new ArrayList();
@@ -136,6 +146,7 @@ public class Tienda2026 {
             System.out.println(c);
         }
     }
+
     //<editor-fold defaultstate="collapsed" desc="metodos">
     private void stock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
         if (a.getExistencias() == 0) {
@@ -147,6 +158,7 @@ public class Tienda2026 {
                     + a.getDescripcion());
         }
     }
+
     // METODO UNIDADES VENDIDAS PARA DETERMINAR LOS ARTICULOS VENDIDOS 
     private int unidadesVendidaas(Articulo a) {
         int c = 0;
@@ -159,6 +171,7 @@ public class Tienda2026 {
         }
         return c;
     }
+
     public String generaIdPedido(String idCliente) {
         int contador = 0;
         String nuevoId; // vble String para ir construyendo un nuevo idPedido
@@ -173,6 +186,7 @@ public class Tienda2026 {
         return nuevoId;
         //</editor-fold>
     }
+
     public double totalPedido(Pedido p) { //Cambiamos a public para probarlo en los test de JUNIT 5
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
@@ -181,6 +195,7 @@ public class Tienda2026 {
         }
         return totalPedido;
     }
+
     /* private double totalPedido(Pedido p) {
         double totalPedido = 0;
         for (LineaPedido l : p.getCestaCompra()) {
@@ -212,22 +227,117 @@ public class Tienda2026 {
         pedidos.add(new Pedido("63921307Y-001/2025", clientes.get("63921307Y"), hoy.minusDays(4), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
 
     }
-   public double totalCliente2(Cliente c){
-        double total =0;
-       total= pedidos.stream().filter(p -> p .getClientePedido().equals(c))
-                .flatMap(p -> p .getCestaCompra().stream())
-                 .mapToDouble(l -> l.getUnidades()* l.getArticulo().getPvp()).sum();
-        return  total;
-    }
-    private void uno() {
-        
+
+    //EJERCIOS EN DE COLECCIONES 
+    //ORDENAR UN PEDIDO POR FECHA
+    
+    public void pedidoOrden() {
+
+        List<Pedido> pedidosOrdenadosfecha
+                = pedidos.stream().sorted(Comparator.comparing(Pedido::getFechaPedido))
+                        .collect(Collectors.toList());
+        pedidos.stream().forEach(p -> System.out.println(p.getIdPedido() + " - " + p.getFechaPedido()));
+        System.out.println("\n");
+        pedidosOrdenadosfecha.stream().forEach(p -> System.out.println(p.getIdPedido() + " - " + p.getFechaPedido()));
+        System.out.println("\n-----------------------------------------------------------------");
+
+        //coleccion con los pedidos y su importe total como clave pricipal su total y valor el Pedido(coleccion)
+        // SI PONEMOS TREEMAP Y NO HASHMAP, ORDENA LA CLAVE DE - A + 
+        TreeMap<Double, Pedido> pedidosConTotales = new TreeMap();
+        for (Pedido p : pedidos) {
+            pedidosConTotales.put(totalPedido(p), p);
+        }
+        for (Double totPedido : pedidosConTotales.descendingKeySet()) {
+            System.out.println(pedidosConTotales.get(totPedido).getIdPedido() + " - " + totPedido);
+        }
+
+        //NOTA: descendingKeySet() ORDENA + A - SOLO SE PUEDE USAR EN LOS TREEMAP
+        //COLECCION DE CLIENTES CON SU TOTAL DE + A -
+        System.out.println("\n-------------------------------------------------------------------------");
+        HashMap<Double, Cliente> clienteConTotal = new HashMap();
         for (Cliente c : clientes.values()) {
-            pedidos.stream().sorted(Comparator.comparing(p -> totalCliente2((Cliente)c)).reversed());
-                System.out.println(c + "- Total: " + totalCliente2(c));
+            if (totalCliente(c) > 0) {
+                clienteConTotal.put(totalCliente(c), c);
+            }
+
+        }
+        for (Double total : clienteConTotal.keySet()) {
+            System.out.println(clienteConTotal.get(total).getNombre() + " - " + total);
         }
         
-              
+        System.out.println("\n---------------------------------------------------------------------------");
+        //COLECION DE LISTAS DE CADA SECCIONES 
+        List<Articulo> periferico = new ArrayList();
+        List<Articulo> almacenamiento = new ArrayList();
+        List<Articulo> impresora = new ArrayList();
+        List<Articulo> monitores = new ArrayList();
+        // ESTILOS MODERNOS 
+        //SI SE HACE DE UNA FORMA MODERNA SE PUEDE USA CON EJ: (LIST <ARTICULO> PERIFERICOS, ETC, ETC, ETC;)
+        periferico = articulos.values().stream()
+                .filter(a -> a.getIdArticulo().startsWith("1"))
+                .collect(Collectors.toList());
+        almacenamiento = articulos.values().stream()
+                .filter(a -> a.getIdArticulo().startsWith("1"))
+                .collect(Collectors.toList());
+        impresora = articulos.values().stream()
+                .filter(a -> a.getIdArticulo().startsWith("1"))
+                .collect(Collectors.toList());
+        monitores = articulos.values().stream()
+                .filter(a -> a.getIdArticulo().startsWith("1"))
+                .collect(Collectors.toList());
+
+        //ESTILO CLASICO ES MAS EFICIENTE PORQUE SOLO DA UNA PASADA
+        for (Articulo a : articulos.values()) {
+            switch (a.getIdArticulo().charAt(0)) {
+                case '1':
+                    periferico.add(a);
+                    break;
+                case '2':
+                    almacenamiento.add(a);
+                    break;
+                case '3':
+                    impresora.add(a);
+                    break;
+                case '4':
+                    monitores.add(a);
+                    break;
+                default:
+            }
+        }
+        
+        //EJERCICIOS DE BORRADOS EN COLLECIONES   
+        // BORRADO LOS ARTICULOS DE LA SECCION
+        //1-REMOVEIF SE APLICA UNA CONDICION 
+        articulos.values().removeIf(a ->a.getIdArticulo().startsWith("3"));
+        //LAS COLECCIONES DE TIPO LIST NO ACEPTAN REMOVEIF
+        //-----------------------------------------------------
+        // PARA HACER UN BORRADO EN LIST USAMOS OTRA ARTECNATIVA 
+        //COLECIONAMOS EN UNA LIST Y BORRAMOS REMOVEALL
+        List <Pedido> pedidosAtiguos
+                =pedidos.stream().filter(p ->p.getFechaPedido().isBefore(LocalDate.now().minusDays(3)))
+                .collect(Collectors.toList());
+        pedidos.removeAll(pedidosAtiguos);
+        //REMOVE() TENGO QUE PONER EL OBJETO QUE QUIERO BORRAR
+       pedidos.stream().forEach(p -> System.out.println(p));
     }
+
+    public double totalCliente2(Cliente c) {
+        double total = 0;
+        total = pedidos.stream().filter(p -> p.getClientePedido().equals(c))
+                .flatMap(p -> p.getCestaCompra().stream())
+                .mapToDouble(l -> l.getUnidades() * l.getArticulo().getPvp()).sum();
+        return total;
+    }
+
+    private void uno() {
+
+        for (Cliente c : clientes.values()) {
+            pedidos.stream().sorted(Comparator.comparing(p -> totalCliente2((Cliente) c)).reversed());
+            System.out.println(c + "- Total: " + totalCliente2(c));
+        }
+
+    }
+
     private void dos() {
         System.out.println("INTRODUCE UN NUMERO PARA UNA SECCION"
                 + "\n1- PERIFERICOS"
@@ -249,31 +359,28 @@ public class Tienda2026 {
     }
 
     private void tres() {
-    
+
     }
 
     private void cuatro() {
-      double total
-               //Solucion
-              // localDate fecha1= LocalDate.now().minusDays(5)
-              // localDate fecha2= LocalDate.now()
-              //.filter(p.getFechaPedido. isAfter(fecha1)(
-              =  pedidos.stream().filter(p -> p.getFechaPedido()== LocalDate.of(2026, 02, 14))
+        double total
+                //Solucion
+                // localDate fecha1= LocalDate.now().minusDays(5)
+                // localDate fecha2= LocalDate.now()
+                //.filter(p.getFechaPedido. isAfter(fecha1)(
+                = pedidos.stream().filter(p -> p.getFechaPedido() == LocalDate.of(2026, 02, 14))
                         .flatMap(p -> p.getCestaCompra().stream())
-                        .mapToDouble(l ->  l.getUnidades() *l.getArticulo().getPvp()).sum();
-          System.out.println("\nTotal facturado entre " + "fecha1" + "Y" + "fecha2" + ": " + total );
+                        .mapToDouble(l -> l.getUnidades() * l.getArticulo().getPvp()).sum();
+        System.out.println("\nTotal facturado entre " + "fecha1" + "Y" + "fecha2" + ": " + total);
     }
 
     private void cinco() {
-       
-        
-            double total = 
-               pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
-                        .mapToDouble(l ->  l.getUnidades() *l.getArticulo().getPvp()/pedidos.size()).sum();
-             
-            System.out.println("IMPORTE MEDIO DE LA TIENDA " + total);
-            
-         }
+        double total
+                = pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
+                        .mapToDouble(l -> l.getUnidades() * l.getArticulo().getPvp() / pedidos.size()).sum();
+
+        System.out.println("IMPORTE MEDIO DE LA TIENDA " + total);
+    }
 
     private void metodosStream() {
         //EJEMPLOS SENCILLOS CON filter() - sorted() - forEach()
@@ -741,11 +848,12 @@ public class Tienda2026 {
     }
 //</editor-fold>
     //<editor-fold defaultstate="collapsed" desc="Gestión de Clientes">
-    public double totalCliente(Cliente c){
-        return pedidos.stream().filter(p-> p.getClientePedido().equals(c))
+
+    public double totalCliente(Cliente c) {
+        return pedidos.stream().filter(p -> p.getClientePedido().equals(c))
                 .mapToDouble(p -> totalPedido(p)).sum();
     }
-    
+
     private void altaCliente() {
     }
 
