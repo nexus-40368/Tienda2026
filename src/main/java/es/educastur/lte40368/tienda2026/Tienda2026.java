@@ -3,6 +3,10 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.Month;
@@ -52,8 +56,11 @@ public class Tienda2026 {
     public static void main(String[] args) {
         Tienda2026 t2026 = new Tienda2026();
         t2026.cargaDatos();
-        t2026.pedidoOrden();
-        t2026.pedidoOrden();
+        //t2026.pedidoOrden();
+        //t2026.pedidoOrden();
+        t2026.guardaClientes();
+        //t2026.leeClientes();
+        t2026.guardaArticuloPorseccion();
         // t2026.stream1(); 
         // System.out.println(t2026.uniVendArticulos(t2026.articulos.get("4-33")));
         //System.out.println(t2026.uniVendArticulos2(t2026.articulos.get("4-33")));
@@ -65,6 +72,115 @@ public class Tienda2026 {
         //  t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
+    }
+
+    //GUARDAR ARCHIVO POR SECCION
+    private void guardaArticuloPorseccion() {
+
+        try (
+                BufferedWriter bwPeriferico = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\PERIFERICO.csv")); BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\ALMACENAMIENTO.csv")); BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\IMPRESORAS.csv")); BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\MONITORES.csv"))) {
+
+            // Aquí escribirías en los archivos
+            for (Articulo a : articulos.values()) {
+
+                switch (a.getIdArticulo().charAt(0)) {
+
+                    case '1':
+                        bwPeriferico.write(a.getIdArticulo() + " - "
+                                + a.getDescripcion() + " - "
+                                + a.getExistencias() + " - " + a.getPvp());
+                        bwPeriferico.newLine();
+                        break;
+
+                    case '2':
+                        bwAlmacenamiento.write(a.getIdArticulo() + " - "
+                                + a.getDescripcion() + " - "
+                                + a.getExistencias() + " - " + a.getPvp());
+                        bwAlmacenamiento.newLine();
+                        break;
+
+                    case '3':
+                        bwImpresoras.write(a.getIdArticulo() + " - "
+                                + a.getDescripcion() + " - "
+                                + a.getExistencias() + " - " + a.getPvp());
+                        bwImpresoras.newLine();
+                        break;
+
+                    case '4':
+                        bwMonitores.write(a.getIdArticulo() + " - "
+                                + a.getDescripcion() + " - "
+                                + a.getExistencias() + " - " + a.getPvp());
+                        bwMonitores.newLine();
+                        break;
+                }
+            }
+
+        } catch (IOException e) {
+            System.out.println("No se han creado los archivos");
+            File f = new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\PERIFERICO.csv");
+          
+        }
+        try (Scanner scSeccion = new Scanner(new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\PERIFERICO.csv"))) {
+            while (scSeccion.hasNextLine()) {
+                System.out.println(scSeccion.nextLine());
+
+            }
+        } catch (IOException e) {
+            System.out.println(e.toString());
+
+        }
+
+    }
+    // LEEMOS LOS ARCHIVO GUARDADOS 
+
+    private void leeClientes() {
+        System.out.println("\nListados de clientes de .txt");
+        try (Scanner scClientes = new Scanner(new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.txt"))) {
+            while (scClientes.hasNextLine()) {
+                System.out.println(scClientes.nextLine());
+
+            }
+        } catch (IOException e) {
+            System.out.println(e.toString());
+
+        }
+
+        //SE CREA UNA NUEVA COLECCION DE TIPO HASHMAP A PARTITIR DEL ARCHIVO CLIENTES.CSV
+        HashMap<String, Cliente> clientesAux = new HashMap();
+        try (Scanner scClientes = new Scanner(new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.csv"))) {
+            while (scClientes.hasNextLine()) {
+                String[] atributos = scClientes.nextLine().split("[,]");
+                Cliente c = new Cliente(atributos[0], atributos[1], atributos[2], atributos[3]);
+                clientesAux.put(atributos[0], c);
+            }
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+        System.out.println("\nListados de clientes del nuevo Hashmap .csv\n");
+        clientesAux.values().forEach(System.out::println);
+    }
+
+    private void guardaClientes() {
+        System.out.println("\n-----------------------------------------------------------------------");
+        //GUARDAMOS LOS CLIENTES LÍNEA A LÍNEA EN UN ARCHIVO .txt ESCRIBIENDO LOS DATOS SEGUN TENGAMOS DISPUESTO EN EL toString()
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.txt"))) {
+            for (Cliente c : clientes.values()) {
+                bw.write(c.toString());
+                bw.newLine();
+            }
+            System.out.println("El Archvo se a creado correctamente en: C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.txt");
+        } catch (IOException e) {
+            System.out.println("No se ha podido escribir en el fichero");
+        }
+        //GUARDAMOS LOS CLIENTES LÍNEA A LÍNEA EN UN ARCHIVO .csv CON LOS VALORES DE LOS ATRIBUTOS SEPARADOS POR ,        
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.csv"))) {
+            for (Cliente c : clientes.values()) {
+                bw.write(c.getIdCliente() + "," + c.getNombre() + "," + c.getTelefono() + "," + c.getEmail() + "\n");
+            }
+            System.out.println("El Archvo se a creado correctamente en: C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.csv ");
+        } catch (IOException e) {
+            System.out.println("No se ha podido escribir en el fichero");
+        }
     }
 
     //METODO SELECIONAR UNA SECCION POR TECLADO 
@@ -148,7 +264,7 @@ public class Tienda2026 {
     }
 
     //<editor-fold defaultstate="collapsed" desc="metodos">
-    private void stock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
+    public void stock(Articulo a, int unidades) throws StockCero, StockInsuficiente {
         if (a.getExistencias() == 0) {
             throw new StockCero("0 unidades disponibles"
                     + a.getDescripcion());
@@ -160,7 +276,7 @@ public class Tienda2026 {
     }
 
     // METODO UNIDADES VENDIDAS PARA DETERMINAR LOS ARTICULOS VENDIDOS 
-    private int unidadesVendidaas(Articulo a) {
+    public int unidadesVendidaas(Articulo a) {
         int c = 0;
         for (Pedido p : pedidos) {
             for (LineaPedido l : p.getCestaCompra()) {
@@ -230,7 +346,6 @@ public class Tienda2026 {
 
     //EJERCIOS EN DE COLECCIONES 
     //ORDENAR UN PEDIDO POR FECHA
-    
     public void pedidoOrden() {
 
         List<Pedido> pedidosOrdenadosfecha
@@ -264,7 +379,7 @@ public class Tienda2026 {
         for (Double total : clienteConTotal.keySet()) {
             System.out.println(clienteConTotal.get(total).getNombre() + " - " + total);
         }
-        
+
         System.out.println("\n---------------------------------------------------------------------------");
         //COLECION DE LISTAS DE CADA SECCIONES 
         List<Articulo> periferico = new ArrayList();
@@ -304,21 +419,21 @@ public class Tienda2026 {
                 default:
             }
         }
-        
+
         //EJERCICIOS DE BORRADOS EN COLLECIONES   
         // BORRADO LOS ARTICULOS DE LA SECCION
         //1-REMOVEIF SE APLICA UNA CONDICION 
-        articulos.values().removeIf(a ->a.getIdArticulo().startsWith("3"));
+        articulos.values().removeIf(a -> a.getIdArticulo().startsWith("3"));
         //LAS COLECCIONES DE TIPO LIST NO ACEPTAN REMOVEIF
         //-----------------------------------------------------
         // PARA HACER UN BORRADO EN LIST USAMOS OTRA ARTECNATIVA 
         //COLECIONAMOS EN UNA LIST Y BORRAMOS REMOVEALL
-        List <Pedido> pedidosAtiguos
-                =pedidos.stream().filter(p ->p.getFechaPedido().isBefore(LocalDate.now().minusDays(3)))
-                .collect(Collectors.toList());
+        List<Pedido> pedidosAtiguos
+                = pedidos.stream().filter(p -> p.getFechaPedido().isBefore(LocalDate.now().minusDays(3)))
+                        .collect(Collectors.toList());
         pedidos.removeAll(pedidosAtiguos);
         //REMOVE() TENGO QUE PONER EL OBJETO QUE QUIERO BORRAR
-       pedidos.stream().forEach(p -> System.out.println(p));
+        pedidos.stream().forEach(p -> System.out.println(p));
     }
 
     public double totalCliente2(Cliente c) {

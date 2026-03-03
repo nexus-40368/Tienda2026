@@ -43,6 +43,7 @@ public class Tienda2026Test {
      * Test of main method, of class Tienda2026.
      */
     @Test
+    // TE PARA EL CARGA DATOS 
     public void testCargaDatos() {
         assertAll(
                 () -> assertEquals(10, t.getArticulos().size()),
@@ -52,6 +53,7 @@ public class Tienda2026Test {
     }
 
     @Test
+    //TEST PARA GENERA ID PEDIDO
     public void testGeneraIdPedido() {
         assertAll(
                 () -> assertEquals("80580845T-003/2026", t.generaIdPedido("80580845T")),
@@ -62,6 +64,7 @@ public class Tienda2026Test {
     }
 
     @Test
+    //TEST PARA PROBAR METODO TOTALPEDIDOS 
     public void testTotalPedido() {
         assertAll(
                 () -> assertEquals(585, t.totalPedido(t.getPedidos().get(0))),
@@ -71,7 +74,7 @@ public class Tienda2026Test {
                 () -> assertEquals(2160, t.totalPedido(t.getPedidos().get(4)))
         );
     }
-
+  //TEST PARA PROBAR METODO TOTALCLIENTES
     @Test
     public void testTotalCliente() {
         assertAll(
@@ -81,4 +84,16 @@ public class Tienda2026Test {
                 () -> assertEquals(0, t.totalCliente(t.getClientes().get("02337565Y")))
         );
     }
+
+    @Test
+    //TEST PARA PROBAR METODO STOCK
+    public void testStock() {
+        assertAll(
+               ()-> assertThrows(StockCero.class, () -> {t.stock(t.getArticulos().get("1-11"), 5);}),
+               ()->   assertThrows(StockCero.class, () -> {t.stock(t.getArticulos().get("2-33"), 5);}),
+               ()->   assertThrows(StockInsuficiente.class, () -> {t.stock(t.getArticulos().get("3-11"), 5);}),
+               ()->   assertThrows(StockInsuficiente.class, () -> {t.stock(t.getArticulos().get("3-22"), 10);})
+        );
+    }
+
 }
