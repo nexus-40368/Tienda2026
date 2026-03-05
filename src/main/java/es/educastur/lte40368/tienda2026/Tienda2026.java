@@ -5,8 +5,11 @@ package es.educastur.lte40368.tienda2026;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.Month;
@@ -58,8 +61,9 @@ public class Tienda2026 {
         t2026.cargaDatos();
         //t2026.pedidoOrden();
         //t2026.pedidoOrden();
-        t2026.guardaClientes();
+        // t2026.guardaClientes();
         //t2026.leeClientes();
+        t2026.leeArticuloPorSeccion();
         t2026.guardaArticuloPorseccion();
         // t2026.stream1(); 
         // System.out.println(t2026.uniVendArticulos(t2026.articulos.get("4-33")));
@@ -72,67 +76,91 @@ public class Tienda2026 {
         //  t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
+
+        //ACHIVOS BINARIOS      
+      
     }
-
-    //GUARDAR ARCHIVO POR SECCION
+        //GUARDAR ARCHIVO POR SECCION
     private void guardaArticuloPorseccion() {
-
-        try (
-                BufferedWriter bwPeriferico = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\PERIFERICO.csv")); BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\ALMACENAMIENTO.csv")); BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\IMPRESORAS.csv")); BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\MONITORES.csv"))) {
-
-            // Aquí escribirías en los archivos
+        System.out.println("\nGUARDAR ARCHIVOS ARTICULOS POR SECCION");
+        try (BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\perifericos.csv")); BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\almacenamiento.csv")); BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\impresoras.csv")); BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\monitores.csv"))) {
             for (Articulo a : articulos.values()) {
-
                 switch (a.getIdArticulo().charAt(0)) {
-
                     case '1':
-                        bwPeriferico.write(a.getIdArticulo() + " - "
-                                + a.getDescripcion() + " - "
-                                + a.getExistencias() + " - " + a.getPvp());
-                        bwPeriferico.newLine();
+                        bwPerifericos.write(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
                         break;
-
                     case '2':
-                        bwAlmacenamiento.write(a.getIdArticulo() + " - "
-                                + a.getDescripcion() + " - "
-                                + a.getExistencias() + " - " + a.getPvp());
-                        bwAlmacenamiento.newLine();
+                        bwAlmacenamiento.write(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
                         break;
-
                     case '3':
-                        bwImpresoras.write(a.getIdArticulo() + " - "
-                                + a.getDescripcion() + " - "
-                                + a.getExistencias() + " - " + a.getPvp());
-                        bwImpresoras.newLine();
+                        bwImpresoras.write(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
                         break;
-
                     case '4':
-                        bwMonitores.write(a.getIdArticulo() + " - "
-                                + a.getDescripcion() + " - "
-                                + a.getExistencias() + " - " + a.getPvp());
-                        bwMonitores.newLine();
+                        bwMonitores.write(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
                         break;
                 }
             }
-
+            System.out.println("Archivos creados correctamente");
         } catch (IOException e) {
-            System.out.println("No se han creado los archivos");
-            File f = new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\PERIFERICO.csv");
-          
-        }
-        try (Scanner scSeccion = new Scanner(new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\PERIFERICO.csv"))) {
-            while (scSeccion.hasNextLine()) {
-                System.out.println(scSeccion.nextLine());
-
-            }
-        } catch (IOException e) {
-            System.out.println(e.toString());
-
+            System.out.println("No se han podido crear los archivos");
+            File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\perifericos.csv");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\almacenamiento.csv");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\impresoras.csv");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\monitores.csv");
+            f.delete();
         }
 
     }
-    // LEEMOS LOS ARCHIVO GUARDADOS 
 
+    //LEE LOS ARTIULOS GUARDADOS POR SECCION
+    private void leeArticuloPorSeccion() {
+        HashMap<String, Articulo> articuloAux = new HashMap();
+        String lineaArchivo;
+        String[] atributos;
+        System.out.println("\nLEER ARTICULOS POR SECCION");
+        try (Scanner scPerifericos = new Scanner(new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\perifericos.csv")); Scanner scAlmacenamineto = new Scanner(new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\almacenamiento.csv")); Scanner scImpresora = new Scanner(new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\impresoras.csv")); Scanner scMonitores = new Scanner(new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\monitores.csv"))) {
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------            
+            System.out.println("\nPERIFERICOS");
+            while (scPerifericos.hasNextLine()) {
+                lineaArchivo = scPerifericos.nextLine();
+                System.out.println(lineaArchivo);
+                atributos = scPerifericos.nextLine().split("[,]");
+                articuloAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+                System.out.println(scPerifericos.nextLine());
+            }
+            System.out.println("ALMACENAMIENTO");
+            while (scAlmacenamineto.hasNextLine()) {
+                lineaArchivo = scAlmacenamineto.nextLine();
+                System.out.println(lineaArchivo);
+                atributos = scAlmacenamineto.nextLine().split("[,]");
+                articuloAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+
+            }
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------ 
+            System.out.println("IMPRESORA");
+            while (scImpresora.hasNextLine()) {
+                lineaArchivo = scImpresora.nextLine();
+                System.out.println(lineaArchivo);
+                atributos = scImpresora.nextLine().split("[,]");
+                articuloAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+            }
+            //------------------------------------------------------------------------------------------------------------------------------------------------------------------   
+            System.out.println("MONITORES");
+            while (scMonitores.hasNextLine()) {
+                lineaArchivo = scMonitores.nextLine();
+                System.out.println(lineaArchivo);
+                atributos = scMonitores.nextLine().split("[,]");
+                articuloAux.put(atributos[0], new Articulo(atributos[0], atributos[1], Integer.parseInt(atributos[2]), Double.parseDouble(atributos[3])));
+            }
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    // LEEMOS LOS ARCHIVO GUARDADOS 
     private void leeClientes() {
         System.out.println("\nListados de clientes de .txt");
         try (Scanner scClientes = new Scanner(new File("C:\\Users\\1dawd18\\OneDrive - Consejería de Educación\\Programacion\\gruardar archcivo\\clientes.txt"))) {
