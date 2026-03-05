@@ -4,6 +4,7 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import java.io.Serializable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +12,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MetodosAuxiliaresTest {
+public class MetodosAuxiliaresTest implements Serializable{
 
     public MetodosAuxiliaresTest() {
     }

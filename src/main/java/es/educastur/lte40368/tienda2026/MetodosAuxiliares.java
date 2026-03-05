@@ -4,11 +4,13 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import java.io.Serializable;
+
 /**
  *
  * @author 1dawd18
  */
-public class MetodosAuxiliares {
+public class MetodosAuxiliares implements Serializable {
     public static boolean esInt(String s) {
         double n;
         try {

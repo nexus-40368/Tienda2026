@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.Month;
@@ -30,7 +31,7 @@ import java.util.stream.Collectors;
  *
  * @author 1dawd18
  */
-public class Tienda2026 {
+public class Tienda2026 implements Serializable{
 
     static Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;

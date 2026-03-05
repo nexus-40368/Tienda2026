@@ -4,6 +4,7 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import java.io.Serializable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * @author 1dawd18
  */
-public class Tienda2026Test {
+public class Tienda2026Test implements Serializable {
 
     public Tienda2026Test() {
     }

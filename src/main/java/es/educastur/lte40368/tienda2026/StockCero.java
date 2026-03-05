@@ -4,11 +4,13 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import java.io.Serializable;
+
 /**
  *
  * @author 1dawd18
  */
-public class StockCero extends Exception{
+public class StockCero extends Exception implements Serializable{
     public StockCero(String mensaje){
         super(mensaje);
     }
