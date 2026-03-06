@@ -4,11 +4,14 @@
 package es.educastur.lte40368.tienda2026;
 
 import java.io.BufferedWriter;
+import java.io.EOFException;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.SQLOutput;
@@ -31,9 +34,9 @@ import java.util.stream.Collectors;
  *
  * @author 1dawd18
  */
-public class Tienda2026 implements Serializable{
+public class Tienda2026 implements Serializable {
 
-    static Scanner sc = new Scanner(System.in);
+    static final transient Scanner sc = new Scanner(System.in);
     private ArrayList<Pedido> pedidos;
     private ArrayList<LineaPedido> cestaCompra = new ArrayList();
     private HashMap<String, Articulo> articulos;
@@ -79,9 +82,86 @@ public class Tienda2026 implements Serializable{
         // t2026.cinco();
 
         //ACHIVOS BINARIOS      
-      
+        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat"))) {
+            oosTienda.writeObject(t2026);
+            System.out.println("TODO OK");
+        } catch (IOException e) {
+            System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
+                    + "revise unidades de almacenamiento e intente de nuevo");
+            File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat");
+            f.delete();
+        }
     }
-        //GUARDAR ARCHIVO POR SECCION
+
+    //GUARDAR COLECCIONE DE LA TIENDA
+    public void exportarColecciones() {
+        try (ObjectOutputStream oosArticulo = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat")); 
+                ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat")); 
+                ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
+          //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
+            for (Articulo a : articulos.values()) {
+                oosArticulo.writeObject(a);
+            }
+            for (Cliente c : clientes.values()) {
+                oosCliente.writeObject(c);
+            }
+            for (Pedido p : pedidos) {
+                oosPedido.writeObject(p);
+            }
+        } catch (IOException ex) {
+            System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
+                    + "revise unidades de almacenamiento e intente de nuevo");
+            File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat");
+            f.delete();
+        }
+    }
+ // IMPORTAR COLECIONE CON ESTE METDO YA NO ES NECESARIO USAR EL CARGA DATOS
+    public void imporColecciones() {
+        try (ObjectInputStream oisArticulo = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat"))) {
+            Articulo a;
+            while ((a = (Articulo) oisArticulo.readObject()) != null) {
+                articulos.put(a.getIdArticulo(), a);
+
+            }
+
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo articulos.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+        try (ObjectInputStream oisCliente = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat"))) {
+            Cliente c; 
+            while ((c = (Cliente) oisCliente.readObject()) != null) {
+
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo articulos.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+        try (ObjectInputStream oisPedido = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
+            Pedido p;
+            while ((p = (Pedido) oisPedido.readObject()) != null) {
+
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo articulos.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+    }
+
+    //GUARDAR ARCHIVO POR SECCION
     private void guardaArticuloPorseccion() {
         System.out.println("\nGUARDAR ARCHIVOS ARTICULOS POR SECCION");
         try (BufferedWriter bwPerifericos = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\perifericos.csv")); BufferedWriter bwAlmacenamiento = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\almacenamiento.csv")); BufferedWriter bwImpresoras = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\impresoras.csv")); BufferedWriter bwMonitores = new BufferedWriter(new FileWriter("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\monitores.csv"))) {
