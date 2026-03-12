@@ -62,27 +62,29 @@ public class Tienda2026 implements Serializable {
 
     public static void main(String[] args) {
         Tienda2026 t2026 = new Tienda2026();
-        t2026.cargaDatos();
+        // t2026.cargaDatos();
+        t2026.imporColecciones();
+        t2026.imporSecciones();
         //t2026.pedidoOrden();
         //t2026.pedidoOrden();
         // t2026.guardaClientes();
         //t2026.leeClientes();
-        t2026.leeArticuloPorSeccion();
-        t2026.guardaArticuloPorseccion();
+        //   t2026.leeArticuloPorSeccion();
+        // t2026.guardaArticuloPorseccion();
         // t2026.stream1(); 
         // System.out.println(t2026.uniVendArticulos(t2026.articulos.get("4-33")));
         //System.out.println(t2026.uniVendArticulos2(t2026.articulos.get("4-33")));
         // System.out.println(t2026.uniVendArticulos3(t2026.articulos.get("4-33")));
         //t2026.metodosStream();
-        // t2026.menu();
-        //t2026.uno();
+        //t2026.menu();
+        // t2026.uno1();
         // t2026.dos();
         //  t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
 
         //ACHIVOS BINARIOS      
-        try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat"))) {
+        /* try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat"))) {
             oosTienda.writeObject(t2026);
             System.out.println("TODO OK");
         } catch (IOException e) {
@@ -90,24 +92,27 @@ public class Tienda2026 implements Serializable {
                     + "revise unidades de almacenamiento e intente de nuevo");
             File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat");
             f.delete();
-        }
+        }*/
+        t2026.exporSeccinesBi();
+        t2026.exportarColecciones();
     }
 
     //GUARDAR COLECCIONE DE LA TIENDA
     public void exportarColecciones() {
-        try (ObjectOutputStream oosArticulo = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat")); 
-                ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat")); 
-                ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
-          //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
+        try (ObjectOutputStream oosArticulo = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat")); ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat")); ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
+            //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
             for (Articulo a : articulos.values()) {
                 oosArticulo.writeObject(a);
             }
+            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
             for (Cliente c : clientes.values()) {
                 oosCliente.writeObject(c);
             }
+            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
             for (Pedido p : pedidos) {
                 oosPedido.writeObject(p);
             }
+            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
         } catch (IOException ex) {
             System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
                     + "revise unidades de almacenamiento e intente de nuevo");
@@ -119,43 +124,92 @@ public class Tienda2026 implements Serializable {
             f.delete();
         }
     }
- // IMPORTAR COLECIONE CON ESTE METDO YA NO ES NECESARIO USAR EL CARGA DATOS
+    //METODOS PARA EXPORTAR ARTICULOS SECCIONES EN BINARIOS 
+
+    public void exporSeccinesBi() {
+      System.out.println("\nINTRODUCE UN NUMERO DE SECCION  1 - 2 -  3 - 4");
+         String sec=sc.nextLine();
+        try (ObjectOutputStream oosPerifericos = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Perifericos.dat")); 
+                ObjectOutputStream oosAlmacenamiento = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Almacenamiento.dat")); 
+                ObjectOutputStream oosImpresoras = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Impresoras.dat"));
+                ObjectOutputStream oosMonitores = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Monitores.dat"))) {
+            for (Articulo a : articulos.values()) {
+                switch (a.getIdArticulo().charAt(0)) {
+                    case '1':
+                        oosPerifericos.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
+                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        break;
+                    case '2':
+                        oosAlmacenamiento.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
+                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        break;
+                    case '3':
+                        oosImpresoras.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
+                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        break;
+                    case '4':
+                        oosMonitores.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
+                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        break;
+                }
+            }
+
+        } catch (IOException ex) {
+            System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
+                    + "revise unidades de almacenamiento e intente de nuevo");
+            File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Perifericos.dat");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Almacenamiento.dat");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Impresoras.dat");
+            f.delete();
+            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Monitores.dat");
+            f.delete();
+        }
+     
+    }
+
+    public void imporSecciones() {
+        
+     
+  
+    }
+
+    // IMPORTAR COLECIONE CON ESTE METDO YA NO ES NECESARIO USAR EL CARGA DATOS
     public void imporColecciones() {
         try (ObjectInputStream oisArticulo = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat"))) {
             Articulo a;
             while ((a = (Articulo) oisArticulo.readObject()) != null) {
                 articulos.put(a.getIdArticulo(), a);
-
             }
-
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
         } catch (EOFException e) {
-            System.out.println("Finalizada la lectura del archivo articulos.dat");
+            System.out.println("Finalizada la lectura del archivo Articulo.dat");
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
         try (ObjectInputStream oisCliente = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat"))) {
-            Cliente c; 
+            Cliente c;
             while ((c = (Cliente) oisCliente.readObject()) != null) {
-
+                clientes.put(c.getIdCliente(), c);
             }
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
         } catch (EOFException e) {
-            System.out.println("Finalizada la lectura del archivo articulos.dat");
+            System.out.println("Finalizada la lectura del archivo Cliente.dat");
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
         try (ObjectInputStream oisPedido = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
             Pedido p;
             while ((p = (Pedido) oisPedido.readObject()) != null) {
-
+                pedidos.add(p);
             }
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
         } catch (EOFException e) {
-            System.out.println("Finalizada la lectura del archivo articulos.dat");
+            System.out.println("Finalizada la lectura del archivo Pedido.dat");
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
