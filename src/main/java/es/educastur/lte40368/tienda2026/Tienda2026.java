@@ -62,9 +62,9 @@ public class Tienda2026 implements Serializable {
 
     public static void main(String[] args) {
         Tienda2026 t2026 = new Tienda2026();
-        // t2026.cargaDatos();
+        t2026.cargaDatos();
         t2026.imporColecciones();
-        t2026.imporSecciones();
+        //t2026.imporSecciones();
         //t2026.pedidoOrden();
         //t2026.pedidoOrden();
         // t2026.guardaClientes();
@@ -76,7 +76,7 @@ public class Tienda2026 implements Serializable {
         //System.out.println(t2026.uniVendArticulos2(t2026.articulos.get("4-33")));
         // System.out.println(t2026.uniVendArticulos3(t2026.articulos.get("4-33")));
         //t2026.metodosStream();
-        //t2026.menu();
+        // t2026.menu();
         // t2026.uno1();
         // t2026.dos();
         //  t2026.tres();
@@ -99,7 +99,12 @@ public class Tienda2026 implements Serializable {
 
     //GUARDAR COLECCIONE DE LA TIENDA
     public void exportarColecciones() {
-        try (ObjectOutputStream oosArticulo = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat")); ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat")); ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
+        try (ObjectOutputStream oosArticulo = new 
+        ObjectOutputStream(new FileOutputStream("D:\\Articulo.dat")); 
+                ObjectOutputStream oosCliente = new 
+        ObjectOutputStream(new FileOutputStream("D:\\Cliente.dat")); 
+                ObjectOutputStream oosPedido = new 
+        ObjectOutputStream(new FileOutputStream("D:\\Pedido.dat"))) {
             //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
             for (Articulo a : articulos.values()) {
                 oosArticulo.writeObject(a);
@@ -118,38 +123,34 @@ public class Tienda2026 implements Serializable {
                     + "revise unidades de almacenamiento e intente de nuevo");
             File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat");
             f.delete();
-            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat");
+            f = new File("D:\\Cliente.dat");
             f.delete();
-            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat");
+            f = new File("D:\\Pedido.dat");
             f.delete();
         }
     }
     //METODOS PARA EXPORTAR ARTICULOS SECCIONES EN BINARIOS 
 
     public void exporSeccinesBi() {
-      System.out.println("\nINTRODUCE UN NUMERO DE SECCION  1 - 2 -  3 - 4");
-         String sec=sc.nextLine();
-        try (ObjectOutputStream oosPerifericos = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Perifericos.dat")); 
-                ObjectOutputStream oosAlmacenamiento = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Almacenamiento.dat")); 
-                ObjectOutputStream oosImpresoras = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Impresoras.dat"));
-                ObjectOutputStream oosMonitores = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Monitores.dat"))) {
+        System.out.println("\nINTRODUCE UN NUMERO DE SECCION  1 - 2 -  3 - 4");
+        try (ObjectOutputStream oosPerifericos = new ObjectOutputStream(new FileOutputStream("D:\\Perifericos.dat")); ObjectOutputStream oosAlmacenamiento = new ObjectOutputStream(new FileOutputStream("D:\\Almacenamiento.dat")); ObjectOutputStream oosImpresoras = new ObjectOutputStream(new FileOutputStream("D:\\Impresoras.dat")); ObjectOutputStream oosMonitores = new ObjectOutputStream(new FileOutputStream("D:\\Monitores.dat"))) {
             for (Articulo a : articulos.values()) {
                 switch (a.getIdArticulo().charAt(0)) {
                     case '1':
-                        oosPerifericos.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
-                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        oosPerifericos.writeObject(a);
+                        System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
                         break;
                     case '2':
-                        oosAlmacenamiento.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
-                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        oosAlmacenamiento.writeObject(a);
+                        System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
                         break;
                     case '3':
-                        oosImpresoras.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
-                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        oosImpresoras.writeObject(a);
+                        System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
                         break;
                     case '4':
-                        oosMonitores.writeObject(a.getIdArticulo() + "," + a.getDescripcion() + "," + a.getExistencias() + "," + a.getPvp() + "\n");
-                            System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
+                        oosMonitores.writeObject(a);
+                        System.out.println("ARCHIVO GUARDADO CORRECTAMENTE");
                         break;
                 }
             }
@@ -157,27 +158,325 @@ public class Tienda2026 implements Serializable {
         } catch (IOException ex) {
             System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
                     + "revise unidades de almacenamiento e intente de nuevo");
-            File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Perifericos.dat");
+            File f = new File("D:\\Perifericos.dat");
             f.delete();
-            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Almacenamiento.dat");
+            f = new File("D:\\Almacenamiento.dat");
             f.delete();
-            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Impresoras.dat");
+            f = new File("D:\\Impresoras.dat");
             f.delete();
-            f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Monitores.dat");
+            f = new File("D:\\Monitores.dat");
             f.delete();
         }
-     
+
+        /* PARA COMPROBAR QUE FUNCIONA, VERIFICAMOS QUE SE HAN CREADO LOS 4 ARCHIVOS EN LA CARPETA
+        RAÍZ DEL PROYECTO CON LA FECHA Y HORA ACTUAL - 
+        ... Y PARA COMPROBAR EL CONTENIDO DE LOS ARCHIVOS LEEREMOS/IMPRIMIREMOS "AL VUELO" SÓLO 1 DE ELLOS
+         CUYA SECCION SOLICITAMOS POR TECLADO
+         */
+        System.out.println("Teclea la Seccion de los articulos CUYO ARCHIVO QUIERES COMPROBAR:");
+        char seccion = sc.next().charAt(0);
+        String nombreArchivo = null;
+        switch (seccion) {
+            case '1':
+                nombreArchivo = "D:\\Perifericos.dat";
+                break;
+            case '2':
+                nombreArchivo = "D:\\Almacenamiento.dat";
+                break;
+            case '3':
+                nombreArchivo = "D:\\Impresoras.dat";
+                break;
+            case '4':
+                nombreArchivo = "D:\\Monitores.dat";
+                break;
+        }
+        Articulo a;
+        try (ObjectInputStream oisArticulos = new ObjectInputStream(new FileInputStream(nombreArchivo))) {
+            while ((a = (Articulo) oisArticulos.readObject()) != null) {
+                System.out.println(a);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+
+    }
+  // EXPORTAR POR FECHA EN BINARIO 
+    public void exportarPedidosUltimos7DiasBinario() {
+
+        LocalDate fechaLimite = LocalDate.now().minusDays(7);
+
+        try (ObjectOutputStream oos
+                = new ObjectOutputStream(
+                        new FileOutputStream("D:\\pedidos_ultimos_7_dias.dat"))) {
+
+            for (Pedido p : pedidos) {
+
+                if (!p.getFechaPedido().isBefore(fechaLimite)) {
+
+                    oos.writeObject(p);
+                }
+            }
+
+            System.out.println("Archivo binario exportado correctamente");
+
+        } catch (IOException e) {
+            System.out.println("Error al exportar pedidos");
+        }
+
+    }
+    public void leerPedidosUltimos7DiasBinario() {
+
+    ArrayList<Pedido> pedidosAux = new ArrayList<>();
+
+    try (ObjectInputStream ois =
+            new ObjectInputStream(
+                new FileInputStream("D:\\pedidos_ultimos_7_dias.dat"))) {
+
+        Pedido p;
+
+        while ((p = (Pedido) ois.readObject()) != null) {
+
+            pedidosAux.add(p);
+        }
+
+    } catch (EOFException e) {
+        System.out.println("Fin del archivo");
+    } catch (IOException | ClassNotFoundException e) {
+        System.out.println("Error al leer archivo");
     }
 
-    public void imporSecciones() {
-        
-     
-  
+    System.out.println("\nPEDIDOS LEÍDOS:");
+    pedidosAux.forEach(System.out::println);
+}
+ // EXPORTAR POR FECHA
+    public void exportarPedidosUltimos7Dias() {
+
+        LocalDate fechaLimite = LocalDate.now().minusDays(7);
+
+        try (BufferedWriter bw = new BufferedWriter(
+                new FileWriter("D:\\pedidos_ultimos_7_dias.csv"))) {
+
+            for (Pedido p : pedidos) {
+
+                if (!p.getFechaPedido().isBefore(fechaLimite)) {
+
+                    double total = 0;
+
+                    for (LineaPedido lp : p.getCestaCompra()) {
+                        total += lp.getUnidades() * lp.getArticulo().getPvp();
+                    }
+
+                    bw.write(p.getIdPedido() + ","
+                            + p.getClientePedido().getIdCliente() + ","
+                            + p.getFechaPedido() + ","
+                            + total);
+
+                    bw.newLine();
+                }
+            }
+
+            System.out.println("Archivo exportado correctamente");
+
+        } catch (IOException e) {
+            System.out.println("Error al exportar pedidos");
+        }
+
     }
+    public void leerPedidosUltimos7DiasCSV() {
+
+    ArrayList<Pedido> pedidosAux = new ArrayList<>();
+
+    try (Scanner sc = new Scanner(
+            new File("D:\\pedidos_ultimos_7_dias.csv"))) {
+
+        while (sc.hasNextLine()) {
+
+            String[] datos = sc.nextLine().split(",");
+
+            String id = datos[0];
+            String dni = datos[1];
+            LocalDate fecha = LocalDate.parse(datos[2]);
+
+            Cliente c = clientes.get(dni);
+
+            Pedido p = new Pedido(id, c, fecha, new ArrayList<>());
+
+            pedidosAux.add(p);
+        }
+
+        System.out.println("Pedidos cargados desde CSV");
+
+    } catch (IOException e) {
+        System.out.println("Error al leer CSV");
+    }
+
+    pedidosAux.forEach(System.out::println);
+}
+    // con binarios sin pedidos
+    public void exportarClientesPorPedidosBinario() {
+
+    try (
+        ObjectOutputStream oosConPedidos =
+                new ObjectOutputStream(new FileOutputStream("D:\\clientes_con_pedidos.dat"));
+
+        ObjectOutputStream oosSinPedidos =
+                new ObjectOutputStream(new FileOutputStream("D:\\clientes_sin_pedidos.dat"))
+    ) {
+
+        for (Cliente c : clientes.values()) {
+
+            int contador = 0;
+
+            for (Pedido p : pedidos) {
+                if (p.getClientePedido().equals(c)) {
+                    contador++;
+                    break;
+                }
+            }
+
+            if (contador > 0) {
+                oosConPedidos.writeObject(c);
+            } else {
+                oosSinPedidos.writeObject(c);
+            }
+        }
+
+        System.out.println("Archivos binarios creados correctamente");
+
+    } catch (IOException e) {
+        System.out.println("Error al exportar clientes en binario");
+    }
+}
+    //sin binarios 
+    public void exportarClientesPorPedidos() {
+
+    try (
+        BufferedWriter bwConPedidos = new BufferedWriter(new FileWriter("D:\\clientes_con_pedidos.csv"));
+        BufferedWriter bwSinPedidos = new BufferedWriter(new FileWriter("D:\\clientes_sin_pedidos.csv"))
+    ) {
+
+        for (Cliente c : clientes.values()) {
+
+            int contador = 0;
+
+            for (Pedido p : pedidos) {
+                if (p.getClientePedido().equals(c)) {
+                    contador++;
+                    break; // importante para no seguir recorriendo
+                }
+            }
+
+            String linea = c.getIdCliente() + "," +
+                           c.getNombre() + "," +
+                           c.getTelefono() + "," +
+                           c.getEmail();
+
+            if (contador > 0) {
+                bwConPedidos.write(linea);
+                bwConPedidos.newLine();
+            } else {
+                bwSinPedidos.write(linea);
+                bwSinPedidos.newLine();
+            }
+        }
+
+        System.out.println("Archivos exportados correctamente");
+
+    } catch (IOException e) {
+        System.out.println("Error al exportar clientes");
+    }
+}
+    
+    private void leerClientesSinPedidosBinario() {
+
+    HashMap<String, Cliente> clientesAux = new HashMap<>();
+
+    try (ObjectInputStream ois =
+            new ObjectInputStream(
+                new FileInputStream("D:\\clientes_sin_pedidos.dat"))) {
+
+        Cliente c;
+
+        while ((c = (Cliente) ois.readObject()) != null) {
+
+            clientesAux.put(c.getIdCliente(), c);
+        }
+
+    } catch (EOFException e) {
+        System.out.println("Fin del archivo");
+    } catch (IOException | ClassNotFoundException e) {
+        System.out.println("Error al leer binario");
+    }
+
+    System.out.println("Clientes cargados en HashMap auxiliar");
+
+    clientesAux.values().forEach(System.out::println);
+}
+    
+    public void leerClientesPorPedidosHashMap() {
+
+    HashMap<String, Cliente> clientesConPedidos = new HashMap<>();
+    HashMap<String, Cliente> clientesSinPedidos = new HashMap<>();
+
+    // 🔹 CLIENTES CON PEDIDOS
+    try (Scanner sc = new Scanner(
+            new File("D:\\clientes_con_pedidos.csv"))) {
+
+        while (sc.hasNextLine()) {
+
+            String[] datos = sc.nextLine().split(",");
+
+            Cliente c = new Cliente(
+                    datos[0],
+                    datos[1],
+                    datos[2],
+                    datos[3]
+            );
+
+            clientesConPedidos.put(c.getIdCliente(), c);
+        }
+
+    } catch (IOException e) {
+        System.out.println("Error al leer clientes con pedidos");
+    }
+
+    // 🔹 CLIENTES SIN PEDIDOS
+    try (Scanner sc = new Scanner(
+            new File("D:\\clientes_sin_pedidos.csv"))) {
+
+        while (sc.hasNextLine()) {
+
+            String[] datos = sc.nextLine().split(",");
+
+            Cliente c = new Cliente(
+                    datos[0],
+                    datos[1],
+                    datos[2],
+                    datos[3]
+            );
+
+            clientesSinPedidos.put(c.getIdCliente(), c);
+        }
+
+    } catch (IOException e) {
+        System.out.println("Error al leer clientes sin pedidos");
+    }
+
+    // 🔥 MOSTRAR RESULTADO
+    System.out.println("\nCLIENTES CON PEDIDOS:");
+    clientesConPedidos.values().forEach(System.out::println);
+
+    System.out.println("\nCLIENTES SIN PEDIDOS:");
+    clientesSinPedidos.values().forEach(System.out::println);
+}
 
     // IMPORTAR COLECIONE CON ESTE METDO YA NO ES NECESARIO USAR EL CARGA DATOS
     public void imporColecciones() {
-        try (ObjectInputStream oisArticulo = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Articulo.dat"))) {
+        try (ObjectInputStream oisArticulo = new ObjectInputStream(new FileInputStream("D:\\Articulo.dat"))) {
             Articulo a;
             while ((a = (Articulo) oisArticulo.readObject()) != null) {
                 articulos.put(a.getIdArticulo(), a);
@@ -189,27 +488,34 @@ public class Tienda2026 implements Serializable {
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
-        try (ObjectInputStream oisCliente = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Cliente.dat"))) {
+        try (ObjectInputStream oisCliente = new ObjectInputStream(new FileInputStream("D:\\Cliente.dat"))) {
             Cliente c;
             while ((c = (Cliente) oisCliente.readObject()) != null) {
                 clientes.put(c.getIdCliente(), c);
             }
+            
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
+            
         } catch (EOFException e) {
             System.out.println("Finalizada la lectura del archivo Cliente.dat");
+            
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
+            
         }
-        try (ObjectInputStream oisPedido = new ObjectInputStream(new FileInputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Pedido.dat"))) {
+        try (ObjectInputStream oisPedido = new ObjectInputStream(new FileInputStream("D:\\Pedido.dat"))) {
             Pedido p;
             while ((p = (Pedido) oisPedido.readObject()) != null) {
                 pedidos.add(p);
             }
+            
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
+            
         } catch (EOFException e) {
             System.out.println("Finalizada la lectura del archivo Pedido.dat");
+            
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
@@ -637,19 +943,26 @@ public class Tienda2026 implements Serializable {
     }
 
     private void tres() {
+        Set<Articulo> vendidos
+                = pedidos.stream()
+                        .flatMap(p -> p.getCestaCompra().stream())
+                        .map(LineaPedido::getArticulo)
+                        .collect(Collectors.toSet());
 
+        List<Articulo> noVendidos
+                = articulos.values().stream()
+                        .filter(a -> !vendidos.contains(a))
+                        .toList();
+        System.out.println("\n");
     }
 
     private void cuatro() {
-        double total
-                //Solucion
-                // localDate fecha1= LocalDate.now().minusDays(5)
-                // localDate fecha2= LocalDate.now()
-                //.filter(p.getFechaPedido. isAfter(fecha1)(
-                = pedidos.stream().filter(p -> p.getFechaPedido() == LocalDate.of(2026, 02, 14))
-                        .flatMap(p -> p.getCestaCompra().stream())
-                        .mapToDouble(l -> l.getUnidades() * l.getArticulo().getPvp()).sum();
-        System.out.println("\nTotal facturado entre " + "fecha1" + "Y" + "fecha2" + ": " + total);
+        LocalDate fecha1 = LocalDate.now().minusDays(5);
+        double total5dias = pedidos.stream()
+                .filter(p -> p.getFechaPedido().isAfter(fecha1))
+                .flatMap(p -> p.getCestaCompra().stream())
+                .mapToDouble(lp -> lp.getArticulo().getPvp() * lp.getUnidades()).sum();
+        System.out.println("\nTotal facturado los ultimos 5 dias: " + total5dias);
     }
 
     private void cinco() {
