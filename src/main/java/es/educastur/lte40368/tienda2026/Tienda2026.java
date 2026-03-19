@@ -63,7 +63,8 @@ public class Tienda2026 implements Serializable {
     public static void main(String[] args) {
         Tienda2026 t2026 = new Tienda2026();
         t2026.cargaDatos();
-        t2026.imporColecciones();
+
+        //t2026.imporColecciones();
         //t2026.imporSecciones();
         //t2026.pedidoOrden();
         //t2026.pedidoOrden();
@@ -77,9 +78,9 @@ public class Tienda2026 implements Serializable {
         // System.out.println(t2026.uniVendArticulos3(t2026.articulos.get("4-33")));
         //t2026.metodosStream();
         // t2026.menu();
-        // t2026.uno1();
-        // t2026.dos();
-        //  t2026.tres();
+        // t2026.uno();
+       // t2026.dos();
+        t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
 
@@ -93,18 +94,13 @@ public class Tienda2026 implements Serializable {
             File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat");
             f.delete();
         }*/
-        t2026.exporSeccinesBi();
+        // t2026.exporSeccinesBi();
         t2026.exportarColecciones();
     }
 
     //GUARDAR COLECCIONE DE LA TIENDA
     public void exportarColecciones() {
-        try (ObjectOutputStream oosArticulo = new 
-        ObjectOutputStream(new FileOutputStream("D:\\Articulo.dat")); 
-                ObjectOutputStream oosCliente = new 
-        ObjectOutputStream(new FileOutputStream("D:\\Cliente.dat")); 
-                ObjectOutputStream oosPedido = new 
-        ObjectOutputStream(new FileOutputStream("D:\\Pedido.dat"))) {
+        try (ObjectOutputStream oosArticulo = new ObjectOutputStream(new FileOutputStream("Articulo.dat")); ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("Cliente.dat")); ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("Pedido.dat"))) {
             //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
             for (Articulo a : articulos.values()) {
                 oosArticulo.writeObject(a);
@@ -158,13 +154,13 @@ public class Tienda2026 implements Serializable {
         } catch (IOException ex) {
             System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
                     + "revise unidades de almacenamiento e intente de nuevo");
-            File f = new File("D:\\Perifericos.dat");
+            File f = new File("Perifericos.dat");
             f.delete();
-            f = new File("D:\\Almacenamiento.dat");
+            f = new File("Almacenamiento.dat");
             f.delete();
-            f = new File("D:\\Impresoras.dat");
+            f = new File("Impresoras.dat");
             f.delete();
-            f = new File("D:\\Monitores.dat");
+            f = new File("Monitores.dat");
             f.delete();
         }
 
@@ -204,7 +200,8 @@ public class Tienda2026 implements Serializable {
         }
 
     }
-  // EXPORTAR POR FECHA EN BINARIO 
+    // EXPORTAR POR FECHA EN BINARIO 
+
     public void exportarPedidosUltimos7DiasBinario() {
 
         LocalDate fechaLimite = LocalDate.now().minusDays(7);
@@ -228,31 +225,33 @@ public class Tienda2026 implements Serializable {
         }
 
     }
+
     public void leerPedidosUltimos7DiasBinario() {
 
-    ArrayList<Pedido> pedidosAux = new ArrayList<>();
+        ArrayList<Pedido> pedidosAux = new ArrayList<>();
 
-    try (ObjectInputStream ois =
-            new ObjectInputStream(
-                new FileInputStream("D:\\pedidos_ultimos_7_dias.dat"))) {
+        try (ObjectInputStream ois
+                = new ObjectInputStream(
+                        new FileInputStream("D:\\pedidos_ultimos_7_dias.dat"))) {
 
-        Pedido p;
+            Pedido p;
 
-        while ((p = (Pedido) ois.readObject()) != null) {
+            while ((p = (Pedido) ois.readObject()) != null) {
 
-            pedidosAux.add(p);
+                pedidosAux.add(p);
+            }
+
+        } catch (EOFException e) {
+            System.out.println("Fin del archivo");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al leer archivo");
         }
 
-    } catch (EOFException e) {
-        System.out.println("Fin del archivo");
-    } catch (IOException | ClassNotFoundException e) {
-        System.out.println("Error al leer archivo");
+        System.out.println("\nPEDIDOS LEÍDOS:");
+        pedidosAux.forEach(System.out::println);
     }
+    // EXPORTAR POR FECHA
 
-    System.out.println("\nPEDIDOS LEÍDOS:");
-    pedidosAux.forEach(System.out::println);
-}
- // EXPORTAR POR FECHA
     public void exportarPedidosUltimos7Dias() {
 
         LocalDate fechaLimite = LocalDate.now().minusDays(7);
@@ -286,197 +285,193 @@ public class Tienda2026 implements Serializable {
         }
 
     }
+
     public void leerPedidosUltimos7DiasCSV() {
 
-    ArrayList<Pedido> pedidosAux = new ArrayList<>();
+        ArrayList<Pedido> pedidosAux = new ArrayList<>();
 
-    try (Scanner sc = new Scanner(
-            new File("D:\\pedidos_ultimos_7_dias.csv"))) {
+        try (Scanner sc = new Scanner(
+                new File("D:\\pedidos_ultimos_7_dias.csv"))) {
 
-        while (sc.hasNextLine()) {
+            while (sc.hasNextLine()) {
 
-            String[] datos = sc.nextLine().split(",");
+                String[] datos = sc.nextLine().split(",");
 
-            String id = datos[0];
-            String dni = datos[1];
-            LocalDate fecha = LocalDate.parse(datos[2]);
+                String id = datos[0];
+                String dni = datos[1];
+                LocalDate fecha = LocalDate.parse(datos[2]);
 
-            Cliente c = clientes.get(dni);
+                Cliente c = clientes.get(dni);
 
-            Pedido p = new Pedido(id, c, fecha, new ArrayList<>());
+                Pedido p = new Pedido(id, c, fecha, new ArrayList<>());
 
-            pedidosAux.add(p);
+                pedidosAux.add(p);
+            }
+
+            System.out.println("Pedidos cargados desde CSV");
+
+        } catch (IOException e) {
+            System.out.println("Error al leer CSV");
         }
 
-        System.out.println("Pedidos cargados desde CSV");
-
-    } catch (IOException e) {
-        System.out.println("Error al leer CSV");
+        pedidosAux.forEach(System.out::println);
     }
 
-    pedidosAux.forEach(System.out::println);
-}
     // con binarios sin pedidos
     public void exportarClientesPorPedidosBinario() {
 
-    try (
-        ObjectOutputStream oosConPedidos =
-                new ObjectOutputStream(new FileOutputStream("D:\\clientes_con_pedidos.dat"));
+        try (
+                ObjectOutputStream oosConPedidos
+                = new ObjectOutputStream(new FileOutputStream("D:\\clientes_con_pedidos.dat")); ObjectOutputStream oosSinPedidos
+                = new ObjectOutputStream(new FileOutputStream("D:\\clientes_sin_pedidos.dat"))) {
 
-        ObjectOutputStream oosSinPedidos =
-                new ObjectOutputStream(new FileOutputStream("D:\\clientes_sin_pedidos.dat"))
-    ) {
+            for (Cliente c : clientes.values()) {
 
-        for (Cliente c : clientes.values()) {
+                int contador = 0;
 
-            int contador = 0;
+                for (Pedido p : pedidos) {
+                    if (p.getClientePedido().equals(c)) {
+                        contador++;
+                        break;
+                    }
+                }
 
-            for (Pedido p : pedidos) {
-                if (p.getClientePedido().equals(c)) {
-                    contador++;
-                    break;
+                if (contador > 0) {
+                    oosConPedidos.writeObject(c);
+                } else {
+                    oosSinPedidos.writeObject(c);
                 }
             }
 
-            if (contador > 0) {
-                oosConPedidos.writeObject(c);
-            } else {
-                oosSinPedidos.writeObject(c);
-            }
+            System.out.println("Archivos binarios creados correctamente");
+
+        } catch (IOException e) {
+            System.out.println("Error al exportar clientes en binario");
         }
-
-        System.out.println("Archivos binarios creados correctamente");
-
-    } catch (IOException e) {
-        System.out.println("Error al exportar clientes en binario");
     }
-}
+
     //sin binarios 
     public void exportarClientesPorPedidos() {
 
-    try (
-        BufferedWriter bwConPedidos = new BufferedWriter(new FileWriter("D:\\clientes_con_pedidos.csv"));
-        BufferedWriter bwSinPedidos = new BufferedWriter(new FileWriter("D:\\clientes_sin_pedidos.csv"))
-    ) {
+        try (
+                BufferedWriter bwConPedidos = new BufferedWriter(new FileWriter("D:\\clientes_con_pedidos.csv")); 
+                BufferedWriter bwSinPedidos = new BufferedWriter(new FileWriter("D:\\clientes_sin_pedidos.csv"))) 
+        {
+            for (Cliente c : clientes.values()) {
+                int contador = 0;
+                for (Pedido p : pedidos) {
+                    if (p.getClientePedido().equals(c)) {
+                        contador++;
+                        break; // importante para no seguir recorriendo
+                    }
+                }
+                String linea = c.getIdCliente() + ","
+                        + c.getNombre() + ","
+                        + c.getTelefono() + ","
+                        + c.getEmail();
 
-        for (Cliente c : clientes.values()) {
-
-            int contador = 0;
-
-            for (Pedido p : pedidos) {
-                if (p.getClientePedido().equals(c)) {
-                    contador++;
-                    break; // importante para no seguir recorriendo
+                if (contador > 0) {
+                    bwConPedidos.write(linea);
+                    bwConPedidos.newLine();
+                } else {
+                    bwSinPedidos.write(linea);
+                    bwSinPedidos.newLine();
                 }
             }
 
-            String linea = c.getIdCliente() + "," +
-                           c.getNombre() + "," +
-                           c.getTelefono() + "," +
-                           c.getEmail();
+            System.out.println("Archivos exportados correctamente");
 
-            if (contador > 0) {
-                bwConPedidos.write(linea);
-                bwConPedidos.newLine();
-            } else {
-                bwSinPedidos.write(linea);
-                bwSinPedidos.newLine();
-            }
+        } catch (IOException e) {
+            System.out.println("Error al exportar clientes");
         }
-
-        System.out.println("Archivos exportados correctamente");
-
-    } catch (IOException e) {
-        System.out.println("Error al exportar clientes");
     }
-}
-    
+
     private void leerClientesSinPedidosBinario() {
 
-    HashMap<String, Cliente> clientesAux = new HashMap<>();
+        HashMap<String, Cliente> clientesAux = new HashMap<>();
 
-    try (ObjectInputStream ois =
-            new ObjectInputStream(
-                new FileInputStream("D:\\clientes_sin_pedidos.dat"))) {
+        try (ObjectInputStream ois
+                = new ObjectInputStream(
+                        new FileInputStream("D:\\clientes_sin_pedidos.dat"))) {
 
-        Cliente c;
+            Cliente c;
 
-        while ((c = (Cliente) ois.readObject()) != null) {
+            while ((c = (Cliente) ois.readObject()) != null) {
 
-            clientesAux.put(c.getIdCliente(), c);
+                clientesAux.put(c.getIdCliente(), c);
+            }
+
+        } catch (EOFException e) {
+            System.out.println("Fin del archivo");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al leer binario");
         }
 
-    } catch (EOFException e) {
-        System.out.println("Fin del archivo");
-    } catch (IOException | ClassNotFoundException e) {
-        System.out.println("Error al leer binario");
+        System.out.println("Clientes cargados en HashMap auxiliar");
+
+        clientesAux.values().forEach(System.out::println);
     }
 
-    System.out.println("Clientes cargados en HashMap auxiliar");
-
-    clientesAux.values().forEach(System.out::println);
-}
-    
     public void leerClientesPorPedidosHashMap() {
 
-    HashMap<String, Cliente> clientesConPedidos = new HashMap<>();
-    HashMap<String, Cliente> clientesSinPedidos = new HashMap<>();
+        HashMap<String, Cliente> clientesConPedidos = new HashMap<>();
+        HashMap<String, Cliente> clientesSinPedidos = new HashMap<>();
 
-    // 🔹 CLIENTES CON PEDIDOS
-    try (Scanner sc = new Scanner(
-            new File("D:\\clientes_con_pedidos.csv"))) {
+        // 🔹 CLIENTES CON PEDIDOS
+        try (Scanner sc = new Scanner(
+                new File("D:\\clientes_con_pedidos.csv"))) {
 
-        while (sc.hasNextLine()) {
+            while (sc.hasNextLine()) {
 
-            String[] datos = sc.nextLine().split(",");
+                String[] datos = sc.nextLine().split(",");
 
-            Cliente c = new Cliente(
-                    datos[0],
-                    datos[1],
-                    datos[2],
-                    datos[3]
-            );
+                Cliente c = new Cliente(
+                        datos[0],
+                        datos[1],
+                        datos[2],
+                        datos[3]
+                );
 
-            clientesConPedidos.put(c.getIdCliente(), c);
+                clientesConPedidos.put(c.getIdCliente(), c);
+            }
+
+        } catch (IOException e) {
+            System.out.println("Error al leer clientes con pedidos");
         }
 
-    } catch (IOException e) {
-        System.out.println("Error al leer clientes con pedidos");
-    }
+        // 🔹 CLIENTES SIN PEDIDOS
+        try (Scanner sc = new Scanner(
+                new File("D:\\clientes_sin_pedidos.csv"))) {
 
-    // 🔹 CLIENTES SIN PEDIDOS
-    try (Scanner sc = new Scanner(
-            new File("D:\\clientes_sin_pedidos.csv"))) {
+            while (sc.hasNextLine()) {
 
-        while (sc.hasNextLine()) {
+                String[] datos = sc.nextLine().split(",");
 
-            String[] datos = sc.nextLine().split(",");
+                Cliente c = new Cliente(
+                        datos[0],
+                        datos[1],
+                        datos[2],
+                        datos[3]
+                );
 
-            Cliente c = new Cliente(
-                    datos[0],
-                    datos[1],
-                    datos[2],
-                    datos[3]
-            );
+                clientesSinPedidos.put(c.getIdCliente(), c);
+            }
 
-            clientesSinPedidos.put(c.getIdCliente(), c);
+        } catch (IOException e) {
+            System.out.println("Error al leer clientes sin pedidos");
         }
 
-    } catch (IOException e) {
-        System.out.println("Error al leer clientes sin pedidos");
+        // 🔥 MOSTRAR RESULTADO
+        System.out.println("\nCLIENTES CON PEDIDOS:");
+        clientesConPedidos.values().forEach(System.out::println);
+
+        System.out.println("\nCLIENTES SIN PEDIDOS:");
+        clientesSinPedidos.values().forEach(System.out::println);
     }
-
-    // 🔥 MOSTRAR RESULTADO
-    System.out.println("\nCLIENTES CON PEDIDOS:");
-    clientesConPedidos.values().forEach(System.out::println);
-
-    System.out.println("\nCLIENTES SIN PEDIDOS:");
-    clientesSinPedidos.values().forEach(System.out::println);
-}
 
     // IMPORTAR COLECIONE CON ESTE METDO YA NO ES NECESARIO USAR EL CARGA DATOS
     public void imporColecciones() {
-        try (ObjectInputStream oisArticulo = new ObjectInputStream(new FileInputStream("D:\\Articulo.dat"))) {
+        try (ObjectInputStream oisArticulo = new ObjectInputStream(new FileInputStream("Articulo.dat"))) {
             Articulo a;
             while ((a = (Articulo) oisArticulo.readObject()) != null) {
                 articulos.put(a.getIdArticulo(), a);
@@ -488,34 +483,34 @@ public class Tienda2026 implements Serializable {
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
-        try (ObjectInputStream oisCliente = new ObjectInputStream(new FileInputStream("D:\\Cliente.dat"))) {
+        try (ObjectInputStream oisCliente = new ObjectInputStream(new FileInputStream("Cliente.dat"))) {
             Cliente c;
             while ((c = (Cliente) oisCliente.readObject()) != null) {
                 clientes.put(c.getIdCliente(), c);
             }
-            
+
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
-            
+
         } catch (EOFException e) {
             System.out.println("Finalizada la lectura del archivo Cliente.dat");
-            
+
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
-            
+
         }
-        try (ObjectInputStream oisPedido = new ObjectInputStream(new FileInputStream("D:\\Pedido.dat"))) {
+        try (ObjectInputStream oisPedido = new ObjectInputStream(new FileInputStream("Pedido.dat"))) {
             Pedido p;
             while ((p = (Pedido) oisPedido.readObject()) != null) {
                 pedidos.add(p);
             }
-            
+
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
-            
+
         } catch (EOFException e) {
             System.out.println("Finalizada la lectura del archivo Pedido.dat");
-            
+
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
@@ -651,8 +646,164 @@ public class Tienda2026 implements Serializable {
             System.out.println("No se ha podido escribir en el fichero");
         }
     }
+    
+    /*
+    
+    
+    
+            for (Cliente c : clientes.values()) {
 
+                int contador = 0;
+
+                for (Pedido p : pedidos) {
+                    if (p.getClientePedido().equals(c)) {
+                        contador++;
+                        break;
+                    }
+                }
+
+                if (contador > 0) {
+                    oosConPedidos.writeObject(c);
+                } else {
+                    oosSinPedidos.writeObject(c);
+                }
+            }
+
+            System.out.println("Archivos binarios creados correctamente");
+
+        } catch (IOException e) {
+            System.out.println("Error al exportar clientes en binario");
+        }
+    
+    */
+    // prueba exportar e importar archivos
+   
+    public void uno() {
+        System.out.println("\n-----------------------------------------------------------------------");
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.txt"))) {
+       
+            for (Cliente c : clientes.values()) {
+                bw.write(c.toString());
+                bw.newLine();
+            }
+            System.out.println("El Archvo se a creado correctamente en: clientes.txt");
+        } catch (IOException e) {
+            System.out.println("No se ha podido escribir en el fichero");
+        }
+        //GUARDAMOS LOS CLIENTES LÍNEA A LÍNEA EN UN ARCHIVO .csv CON LOS VALORES DE LOS ATRIBUTOS SEPARADOS POR ,        
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv"))) {
+            for (Cliente c : clientes.values()) {
+                bw.write(c.getIdCliente() + "," + c.getNombre() + "," + c.getTelefono() + "," + c.getEmail() + "\n");
+            }
+            System.out.println("El Archvo se a creado correctamente en: clientes.csv ");
+        } catch (IOException e) {
+            System.out.println("No se ha podido escribir en el fichero");
+        }
+    }
+
+    public void dos() {
+        LocalDate mes1 = LocalDate.now().withMonth(2);
+        try (ObjectOutputStream oosPedidosEneros2026 = new ObjectOutputStream(new FileOutputStream("PedidosEneros2026.dat")); 
+                ObjectOutputStream oosPedidosFebrero2026 = new ObjectOutputStream(new FileOutputStream("PedidosFebrero2026.dat")); 
+                ObjectOutputStream oosPedidosMarzo2026 = new ObjectOutputStream(new FileOutputStream("PedidosMarzo2026 .dat"))) {
+            for (Pedido p : pedidos) {
+                if (p.getFechaPedido().isBefore(mes1)) {
+                    oosPedidosEneros2026.writeObject(p);
+                } else {
+                    p.getFechaPedido().isEqual(mes1);
+                    oosPedidosFebrero2026.writeObject(p);
+                }
+                if (p.getFechaPedido().isAfter(mes1)) {
+                    oosPedidosMarzo2026.writeObject(p);
+                }
+            }
+
+        } catch (IOException ex) {
+            System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
+                    + "revise unidades de almacenamiento e intente de nuevo");
+            File f = new File("PedidosEneros2026.dat");
+            f.delete();
+            f = new File("PedidosFebrero2026.dat");
+            f.delete();
+            f = new File("PedidosMarzo2026.dat");
+            f.delete();
+        }
+    }
+
+    public void tres() {
+        ArrayList<Pedido> pedidosAux = new ArrayList<>();
+        try (ObjectInputStream oisPedidosEnero2026
+                = new ObjectInputStream(
+                        new FileInputStream("PedidosEneros2026.dat"))) {
+            Pedido p;
+            while ((p = (Pedido) oisPedidosEnero2026.readObject()) != null) {
+                pedidosAux.add(p);
+            }
+            
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo Articulo.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+        
+        try (ObjectInputStream oisPedidosFebrero2026
+                = new ObjectInputStream(
+                        new FileInputStream("PedidosFebrero2026.dat"))) {
+            Pedido p;
+            while ((p = (Pedido) oisPedidosFebrero2026.readObject()) != null) {
+                pedidosAux.add(p);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo Articulo.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+        
+        try (ObjectInputStream oisPedidosMarzo2026
+                = new ObjectInputStream(
+                        new FileInputStream("PedidosMarzo2026.dat"))) {
+            Pedido p;
+            while ((p = (Pedido) oisPedidosMarzo2026.readObject()) != null) {
+                pedidosAux.add(p);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println(e.toString());
+        } catch (EOFException e) {
+            System.out.println("Finalizada la lectura del archivo Articulo.dat");
+        } catch (ClassNotFoundException | IOException e) {
+            System.out.println(e.toString());
+        }
+            System.out.println("Carga datos de pedidos Auxiliares");
+        pedidosAux.stream().forEach(System.out::println);
+    }
+    
+     public void cuatro() {
+          try (BufferedWriter bw = new BufferedWriter(new FileWriter("Pedidos_NombrePedidos.txt"))) {
+             for (Cliente c : clientes.values()) {
+                int contador = 0;
+                for (Pedido p : pedidos) {
+                    if (p.getClientePedido().equals(c)) {
+                        contador++;
+                        break;
+                    }
+                }
+                if (contador > 0) {
+                  bw.write(c.toString());
+                  bw.newLine();
+                }
+            }
+
+            System.out.println("El Archvo se a creado correctamente en: Pedidos_NombrePedidos.txt ");
+        } catch (IOException e) {
+            System.out.println("No se ha podido escribir en el fichero");
+        }
+    }
     //METODO SELECIONAR UNA SECCION POR TECLADO 
+
     private void uno1() {
         String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
         System.out.println("Selecion a listar");
@@ -789,28 +940,29 @@ public class Tienda2026 implements Serializable {
         return totalPedido;
     }*/
     public void cargaDatos() {
-        clientes.put("80580845T", new Cliente("80580845T", "ANA", "658111111", "ana@gmail.com"));
         clientes.put("36347775R", new Cliente("36347775R", "LOLA", "649222222", "lola@gmail.com"));
         clientes.put("63921307Y", new Cliente("63921307Y", "JUAN", "652333333", "juan@gmail.com"));
+        clientes.put("80580845T", new Cliente("80580845T", "ANA", "658111111", "ana@gmail.com"));
         clientes.put("02337565Y", new Cliente("02337565Y", "EDU", "634567890", "edu@gmail.com"));
 
-        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST", 0, 15));
-        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD", 5, 18));
-        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB ", 0, 80));
+        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST ", 0, 15));
+        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD  ", 5, 18));
+        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB  ", 15, 80));
         articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
         articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
-        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800", 2, 200));
-        articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300", 5, 80));
-        articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22", 5, 100));
-        articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28", 5, 180));
+        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800 ", 2, 200));
+        articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300 ", 5, 80));
+        articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22 ", 5, 100));
+        articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28 ", 5, 180));
         articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
-        LocalDate hoy = LocalDate.now();
-        pedidos.add(new Pedido("80580845T-001/2025", clientes.get("80580845T"), hoy.minusDays(1), new ArrayList<>(List.of(new LineaPedido(articulos.get("1-11"), 3), new LineaPedido(articulos.get("4-22"), 3)))));
-        pedidos.add(new Pedido("80580845T-002/2025", clientes.get("80580845T"), hoy.minusDays(2), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-11"), 3), new LineaPedido(articulos.get("4-22"), 2), new LineaPedido(articulos.get("4-33"), 4)))));
-        pedidos.add(new Pedido("36347775R-001/2025", clientes.get("36347775R"), hoy.minusDays(3), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-22"), 1), new LineaPedido(articulos.get("2-22"), 3)))));
-        pedidos.add(new Pedido("36347775R-002/2025", clientes.get("36347775R"), hoy.minusDays(5), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-33"), 3), new LineaPedido(articulos.get("2-11"), 3)))));
-        pedidos.add(new Pedido("63921307Y-001/2025", clientes.get("63921307Y"), hoy.minusDays(4), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
 
+        LocalDate hoy = LocalDate.now();
+        pedidos.add(new Pedido("80580845T-001/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("1-11"), 3), new LineaPedido(articulos.get("4-22"), 3)))));
+        pedidos.add(new Pedido("80580845T-002/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-10"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-11"), 3), new LineaPedido(articulos.get("4-22"), 2), new LineaPedido(articulos.get("4-33"), 4)))));
+        pedidos.add(new Pedido("80580845T-003/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-15"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 1), new LineaPedido(articulos.get("3-22"), 2)))));
+        pedidos.add(new Pedido("36347775R-001/2026", clientes.get("36347775R"), LocalDate.parse("2026-02-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-22"), 1), new LineaPedido(articulos.get("2-22"), 3)))));
+        pedidos.add(new Pedido("36347775R-002/2026", clientes.get("36347775R"), LocalDate.parse("2026-02-10"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-33"), 3), new LineaPedido(articulos.get("2-11"), 3)))));
+        pedidos.add(new Pedido("63921307Y-001/2026", clientes.get("63921307Y"), LocalDate.parse("2026-03-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
     }
 
     //EJERCIOS EN DE COLECCIONES 
@@ -913,7 +1065,7 @@ public class Tienda2026 implements Serializable {
         return total;
     }
 
-    private void uno() {
+    private void uno11() {
 
         for (Cliente c : clientes.values()) {
             pedidos.stream().sorted(Comparator.comparing(p -> totalCliente2((Cliente) c)).reversed());
@@ -922,7 +1074,7 @@ public class Tienda2026 implements Serializable {
 
     }
 
-    private void dos() {
+    private void dos11() {
         System.out.println("INTRODUCE UN NUMERO PARA UNA SECCION"
                 + "\n1- PERIFERICOS"
                 + "\n2- ALMACENAMIENTO"
@@ -935,14 +1087,9 @@ public class Tienda2026 implements Serializable {
                 .sorted(Comparator.comparing(Articulo::getPvp).reversed())
                 .forEach(a -> System.out.println(a));
 
-        /*int unidades = pedidos.stream().filter(p -> p.getArtic)
-                    .flatMap(p -> p.getCestaCompra().stream()).filter(l -> l.getArticulo().equals(articulos.get("4-22")))
-                    .mapToInt(LineaPedido::getUnidades).sum();
-
-            System.out.println(c.getNombre() + ": " + unidades + " de " + articulos.get("4-22").getDescripcion());*/
     }
 
-    private void tres() {
+    private void tres11() {
         Set<Articulo> vendidos
                 = pedidos.stream()
                         .flatMap(p -> p.getCestaCompra().stream())
@@ -956,7 +1103,7 @@ public class Tienda2026 implements Serializable {
         System.out.println("\n");
     }
 
-    private void cuatro() {
+    private void cuatro11() {
         LocalDate fecha1 = LocalDate.now().minusDays(5);
         double total5dias = pedidos.stream()
                 .filter(p -> p.getFechaPedido().isAfter(fecha1))
