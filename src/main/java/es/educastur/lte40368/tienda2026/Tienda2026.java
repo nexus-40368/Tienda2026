@@ -79,7 +79,7 @@ public class Tienda2026 implements Serializable {
         //t2026.metodosStream();
         // t2026.menu();
         // t2026.uno();
-       // t2026.dos();
+        // t2026.dos();
         t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
@@ -354,9 +354,7 @@ public class Tienda2026 implements Serializable {
     public void exportarClientesPorPedidos() {
 
         try (
-                BufferedWriter bwConPedidos = new BufferedWriter(new FileWriter("D:\\clientes_con_pedidos.csv")); 
-                BufferedWriter bwSinPedidos = new BufferedWriter(new FileWriter("D:\\clientes_sin_pedidos.csv"))) 
-        {
+                BufferedWriter bwConPedidos = new BufferedWriter(new FileWriter("D:\\clientes_con_pedidos.csv")); BufferedWriter bwSinPedidos = new BufferedWriter(new FileWriter("D:\\clientes_sin_pedidos.csv"))) {
             for (Cliente c : clientes.values()) {
                 int contador = 0;
                 for (Pedido p : pedidos) {
@@ -646,7 +644,7 @@ public class Tienda2026 implements Serializable {
             System.out.println("No se ha podido escribir en el fichero");
         }
     }
-    
+
     /*
     
     
@@ -675,60 +673,72 @@ public class Tienda2026 implements Serializable {
             System.out.println("Error al exportar clientes en binario");
         }
     
-    */
+     */
     // prueba exportar e importar archivos
-   
+    //ORDENAR LOS CLIENTE EN ORDEN ALFABETICO DE A-Z
     public void uno() {
-        System.out.println("\n-----------------------------------------------------------------------");
+        System.out.println("\n----------------------------------------------------------------------------");
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.txt"))) {
-       
-            for (Cliente c : clientes.values()) {
-                bw.write(c.toString());
-                bw.newLine();
-            }
+            clientes.values().stream()
+                    .sorted((c1, c2) -> c1.getNombre().compareToIgnoreCase(c2.getNombre()))
+                    .forEach(c -> {
+                        try {
+                            bw.write(c.toString());
+                            bw.newLine();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
             System.out.println("El Archvo se a creado correctamente en: clientes.txt");
+
         } catch (IOException e) {
             System.out.println("No se ha podido escribir en el fichero");
         }
-        //GUARDAMOS LOS CLIENTES LÍNEA A LÍNEA EN UN ARCHIVO .csv CON LOS VALORES DE LOS ATRIBUTOS SEPARADOS POR ,        
+        System.out.println("\n------------------------------------------------------------------------------");
+
         try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv"))) {
-            for (Cliente c : clientes.values()) {
-                bw.write(c.getIdCliente() + "," + c.getNombre() + "," + c.getTelefono() + "," + c.getEmail() + "\n");
-            }
-            System.out.println("El Archvo se a creado correctamente en: clientes.csv ");
+            clientes.values().stream()
+                    .sorted((c1, c2) -> c1.getNombre().compareToIgnoreCase(c2.getNombre()))
+                    .forEach(c -> {
+                        try {
+                            bw.write(c.getIdCliente() + "," + c.getNombre() + "," + c.getTelefono() + "," + c.getEmail());
+                            bw.newLine();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
         } catch (IOException e) {
             System.out.println("No se ha podido escribir en el fichero");
         }
     }
-
     public void dos() {
-        LocalDate mes1 = LocalDate.now().withMonth(2);
-        try (ObjectOutputStream oosPedidosEneros2026 = new ObjectOutputStream(new FileOutputStream("PedidosEneros2026.dat")); 
-                ObjectOutputStream oosPedidosFebrero2026 = new ObjectOutputStream(new FileOutputStream("PedidosFebrero2026.dat")); 
-                ObjectOutputStream oosPedidosMarzo2026 = new ObjectOutputStream(new FileOutputStream("PedidosMarzo2026 .dat"))) {
-            for (Pedido p : pedidos) {
-                if (p.getFechaPedido().isBefore(mes1)) {
-                    oosPedidosEneros2026.writeObject(p);
-                } else {
-                    p.getFechaPedido().isEqual(mes1);
-                    oosPedidosFebrero2026.writeObject(p);
-                }
-                if (p.getFechaPedido().isAfter(mes1)) {
-                    oosPedidosMarzo2026.writeObject(p);
-                }
-            }
+    try (ObjectOutputStream oosEnero = new ObjectOutputStream(new FileOutputStream("PedidosEnero2026.dat"));
+         ObjectOutputStream oosFebrero = new ObjectOutputStream(new FileOutputStream("PedidosFebrero2026.dat"));
+         ObjectOutputStream oosMarzo = new ObjectOutputStream(new FileOutputStream("PedidosMarzo2026.dat"))) {
 
-        } catch (IOException ex) {
-            System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
-                    + "revise unidades de almacenamiento e intente de nuevo");
-            File f = new File("PedidosEneros2026.dat");
-            f.delete();
-            f = new File("PedidosFebrero2026.dat");
-            f.delete();
-            f = new File("PedidosMarzo2026.dat");
-            f.delete();
+        for (Pedido p : pedidos) {
+
+            int mes = p.getFechaPedido().getMonthValue();
+
+            if (mes == 1) {
+                oosEnero.writeObject(p);
+
+            } else if (mes == 2) {
+                oosFebrero.writeObject(p);
+
+            } else if (mes == 3) {
+                oosMarzo.writeObject(p);
+            }
         }
+
+    } catch (IOException ex) {
+        System.out.println("Error al copiar los pedidos");
+
+        new File("PedidosEnero2026.dat").delete();
+        new File("PedidosFebrero2026.dat").delete();
+        new File("PedidosMarzo2026.dat").delete();
     }
+}
 
     public void tres() {
         ArrayList<Pedido> pedidosAux = new ArrayList<>();
@@ -739,7 +749,7 @@ public class Tienda2026 implements Serializable {
             while ((p = (Pedido) oisPedidosEnero2026.readObject()) != null) {
                 pedidosAux.add(p);
             }
-            
+
         } catch (FileNotFoundException e) {
             System.out.println(e.toString());
         } catch (EOFException e) {
@@ -747,7 +757,7 @@ public class Tienda2026 implements Serializable {
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
-        
+
         try (ObjectInputStream oisPedidosFebrero2026
                 = new ObjectInputStream(
                         new FileInputStream("PedidosFebrero2026.dat"))) {
@@ -762,7 +772,7 @@ public class Tienda2026 implements Serializable {
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
-        
+
         try (ObjectInputStream oisPedidosMarzo2026
                 = new ObjectInputStream(
                         new FileInputStream("PedidosMarzo2026.dat"))) {
@@ -777,13 +787,13 @@ public class Tienda2026 implements Serializable {
         } catch (ClassNotFoundException | IOException e) {
             System.out.println(e.toString());
         }
-            System.out.println("Carga datos de pedidos Auxiliares");
+        System.out.println("Carga datos de pedidos Auxiliares");
         pedidosAux.stream().forEach(System.out::println);
     }
-    
-     public void cuatro() {
-          try (BufferedWriter bw = new BufferedWriter(new FileWriter("Pedidos_NombrePedidos.txt"))) {
-             for (Cliente c : clientes.values()) {
+
+    public void cuatro() {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Pedidos_NombrePedidos.txt"))) {
+            for (Cliente c : clientes.values()) {
                 int contador = 0;
                 for (Pedido p : pedidos) {
                     if (p.getClientePedido().equals(c)) {
@@ -792,8 +802,8 @@ public class Tienda2026 implements Serializable {
                     }
                 }
                 if (contador > 0) {
-                  bw.write(c.toString());
-                  bw.newLine();
+                    bw.write(c.toString());
+                    bw.newLine();
                 }
             }
 
