@@ -7,6 +7,11 @@
     <packaging>jar</packaging>
     <dependencies>
         <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.22</version>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.10.3</version>
@@ -30,4 +35,5 @@
         <maven.compiler.release>21</maven.compiler.release>
         <exec.mainClass>es.educastur.lte40368.tienda2026.Tienda2026</exec.mainClass>
     </properties>
+    
 </project>

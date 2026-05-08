@@ -14,7 +14,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.SQLOutput;
+import java.sql.Statement;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -29,6 +33,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javax.print.DocFlavor;
 
 /**
  *
@@ -80,27 +85,103 @@ public class Tienda2026 implements Serializable {
         // t2026.menu();
         // t2026.uno();
         // t2026.dos();
-        t2026.tres();
+        //t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
-
-        //ACHIVOS BINARIOS      
-        /* try (ObjectOutputStream oosTienda = new ObjectOutputStream(new FileOutputStream("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat"))) {
-            oosTienda.writeObject(t2026);
-            System.out.println("TODO OK");
-        } catch (IOException e) {
-            System.out.println("No se ha podido realizar la copia de seguridad correctamente, "
-                    + "revise unidades de almacenamiento e intente de nuevo");
-            File f = new File("C:\\Users\\1dawd18\\Documents\\Programacion\\Nueva carpeta\\Tienda2026.dat");
-            f.delete();
-        }*/
+        t2026.jdbcGuartdarClientes();
+        t2026.jdbcLeeClientes();
+       // t2026.jdbcGuardaArticulos();
+        //t2026.jdbcLeeArticulos();
         // t2026.exporSeccinesBi();
-        t2026.exportarColecciones();
+        //t2026.exportarColecciones();
     }
+    //METODO PARA GUARDAR Y LEER CLIENTES
+    private void jdbcGuartdarClientes(){
+        String consulta;
+        for (Cliente c : clientes.values()) {
+            consulta= "INSERT INTO `clientes` (`idCliente`, `nombre`, `telefono`,`email`)"
+                    + "VALUES ('" + c.getIdCliente()+ "', '"+c.getNombre()+"', '"+c.getTelefono()+"', '"+c.getEmail()+"')";
+            try {
+                PreparedStatement ps= Conexion.obtener().prepareStatement(consulta);
+                ps.executeUpdate();
+            } catch (ClassNotFoundException | SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        System.out.println("CLIENTES exportados a MySQL correctamente");
+    }
+    private void jdbcLeeClientes(){
+        Statement sentencia;
+        ArrayList <Cliente> auxClientes =new ArrayList();
+        
+        String consultaSQL= "SELECT * FROM clientes";
+        try {
+            sentencia=Conexion.obtener().createStatement();
+            ResultSet rs = sentencia.executeQuery(consultaSQL);
+            while (rs.next()) {
+                auxClientes.add(new Cliente(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4)));
+               
+            }
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(e.toString());
+        }
+         System.out.println("CLIENTES importados desde MySQL correctamente");
+            auxClientes.stream().forEach(System.out::println);
+    }
+    
+    
+    //METODOS PARA GUARDAR Y LEER LOS ARTICULOS 
+     private void jdbcGuardaArticulos(){
+        String consulta;
+        
+        for (Articulo a:articulos.values()){
+            consulta = "INSERT INTO `articulos` (`idArticulo`, `descripcion`, `existencias`, `pvp`)"
+                    + " VALUES ('" + a.getIdArticulo()+"', '"+a.getDescripcion()+"', '"+a.getExistencias()+"', '" + a.getPvp()+"')";
+            try {
+                PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
+                ps.executeUpdate();
+            } catch (ClassNotFoundException | SQLException e) {
+                System.out.println(e.toString());
+            }
+        }
+        System.out.println("ARTICULOS exportados a MySQL correctamente");
+    }
+     //FIN DE METODO
+   private void jdbcLeeArticulos(){
+        Statement sentencia;
+        ArrayList <Articulo> articulosAux = new ArrayList();
+        /*LEER ARTICULOS DESDE LA BD */
+        
+        String consultaSQL ="SELECT * FROM articulos";      
+        try {
+            /* Usando la clase Conexion SE CREA UN OBJETO DE TIPO Statement sobre el que se van 
+            a lanzar consultas SQL.
+               Despues se lanza la consulta SQL a traves del Statement y se recogen los registros
+            en un ResultSet (Conjunto de registros resultado de una consulta SQL)
+            */ 
+             // Resul set almacenamiento medio parecido a una coleccion 
+            sentencia = Conexion.obtener().createStatement();
+            ResultSet rs=sentencia.executeQuery(consultaSQL);
+            while (rs.next())
+            {
+                articulosAux.add(new Articulo(rs.getString(1),rs.getString(2),rs.getInt(3),rs.getDouble(4)));
+            }
+            System.out.println("ARTICULOS importados desde MySQL correctamente");
+        }catch (ClassNotFoundException | SQLException e) {
+                System.out.println(e.toString());
+        }
+        articulosAux.stream().forEach(System.out::println);
+}
 
+   
     //GUARDAR COLECCIONE DE LA TIENDA
     public void exportarColecciones() {
-        try (ObjectOutputStream oosArticulo = new ObjectOutputStream(new FileOutputStream("Articulo.dat")); ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("Cliente.dat")); ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("Pedido.dat"))) {
+        try (ObjectOutputStream oosArticulo = 
+                new ObjectOutputStream(new FileOutputStream("Articulo.dat")); 
+                ObjectOutputStream oosCliente = new 
+        ObjectOutputStream(new FileOutputStream("Cliente.dat"));
+                ObjectOutputStream oosPedido = new 
+        ObjectOutputStream(new FileOutputStream("Pedido.dat"))) {
             //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
             for (Articulo a : articulos.values()) {
                 oosArticulo.writeObject(a);
@@ -645,35 +726,6 @@ public class Tienda2026 implements Serializable {
         }
     }
 
-    /*
-    
-    
-    
-            for (Cliente c : clientes.values()) {
-
-                int contador = 0;
-
-                for (Pedido p : pedidos) {
-                    if (p.getClientePedido().equals(c)) {
-                        contador++;
-                        break;
-                    }
-                }
-
-                if (contador > 0) {
-                    oosConPedidos.writeObject(c);
-                } else {
-                    oosSinPedidos.writeObject(c);
-                }
-            }
-
-            System.out.println("Archivos binarios creados correctamente");
-
-        } catch (IOException e) {
-            System.out.println("Error al exportar clientes en binario");
-        }
-    
-     */
     // prueba exportar e importar archivos
     //ORDENAR LOS CLIENTE EN ORDEN ALFABETICO DE A-Z
     public void uno() {
