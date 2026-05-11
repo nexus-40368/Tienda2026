@@ -33,6 +33,7 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.print.DocFlavor;
 
 /**
@@ -88,21 +89,91 @@ public class Tienda2026 implements Serializable {
         //t2026.tres();
         // t2026.cuatro();
         // t2026.cinco();
-        t2026.jdbcGuartdarClientes();
-        t2026.jdbcLeeClientes();
-       // t2026.jdbcGuardaArticulos();
+        //t2026.jdbcGuartdarClientes();
+        //t2026.jdbcLeeClientes();
+        // t2026.jdbcGuardaArticulos();
         //t2026.jdbcLeeArticulos();
         // t2026.exporSeccinesBi();
         //t2026.exportarColecciones();
+        //t2026.ejercicioEcho1();
+         t2026.ejercicioecho2();
     }
+
+    public void cargaDatos() {
+        clientes.put("36347775R", new Cliente("36347775R", "LOLA", "649222222", "lola@gmail.com"));
+        clientes.put("63921307Y", new Cliente("63921307Y", "JUAN", "652333333", "juan@gmail.com"));
+        clientes.put("80580845T", new Cliente("80580845T", "ANA", "658111111", "ana@gmail.com"));
+        clientes.put("02337565Y", new Cliente("02337565Y", "EDU", "634567890", "edu@gmail.com"));
+
+        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST ", 0, 15));
+        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD  ", 5, 18));
+        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB  ", 15, 80));
+        articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
+        articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
+        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800 ", 2, 200));
+        articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300 ", 5, 80));
+        articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22 ", 5, 100));
+        articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28 ", 5, 180));
+        articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
+
+        LocalDate hoy = LocalDate.now();
+        pedidos.add(new Pedido("80580845T-001/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("1-11"), 3), new LineaPedido(articulos.get("4-22"), 3)))));
+        pedidos.add(new Pedido("80580845T-002/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-10"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-11"), 3), new LineaPedido(articulos.get("4-22"), 2), new LineaPedido(articulos.get("4-33"), 4)))));
+        pedidos.add(new Pedido("80580845T-003/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-15"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 1), new LineaPedido(articulos.get("3-22"), 2)))));
+        pedidos.add(new Pedido("36347775R-001/2026", clientes.get("36347775R"), LocalDate.parse("2026-02-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-22"), 1), new LineaPedido(articulos.get("2-22"), 3)))));
+        pedidos.add(new Pedido("36347775R-002/2026", clientes.get("36347775R"), LocalDate.parse("2026-02-10"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-33"), 3), new LineaPedido(articulos.get("2-11"), 3)))));
+        pedidos.add(new Pedido("63921307Y-001/2026", clientes.get("63921307Y"), LocalDate.parse("2026-03-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
+    }
+
+    // EJECICIOS ECHOS EN CASA CON STREAM
+    //  Clientes que compraron un artículo
+    public void ejercicioEcho1() {
+        System.out.println("INTRODUCE EL ID DE UN ARTICULO");
+        String idArticulo = sc.nextLine();
+
+        clientes.values().stream()
+                .forEach(c -> {
+
+                    int unidades = pedidos.stream()
+                            .filter(p -> p.getClientePedido().equals(c))
+                            .flatMap(p -> p.getCestaCompra().stream())
+                            .filter(l -> l.getArticulo()
+                            .getIdArticulo()
+                            .equalsIgnoreCase(idArticulo))
+                            .mapToInt(LineaPedido::getUnidades)
+                            .sum();
+
+                    if (unidades > 0) {
+
+                        System.out.println(c.getNombre()
+                                + " --> "
+                                + unidades + " unidades");
+                    }
+                });
+    }
+    
+    //Total unidades vendidas de cada artículo
+    public void ejercicioecho2(){
+        for (Articulo a : articulos.values()) {
+           int unidades= pedidos.stream().flatMap(c-> c.getCestaCompra().stream())
+                    .filter(l-> l.getArticulo().equals(a))
+                    .mapToInt(LineaPedido::getUnidades)
+                   .sum();
+              System.out.println(a.getDescripcion()
+                + " --> "
+                + unidades + " unidades");
+        }
+    }
+            
+
     //METODO PARA GUARDAR Y LEER CLIENTES
-    private void jdbcGuartdarClientes(){
+    private void jdbcGuartdarClientes() {
         String consulta;
         for (Cliente c : clientes.values()) {
-            consulta= "INSERT INTO `clientes` (`idCliente`, `nombre`, `telefono`,`email`)"
-                    + "VALUES ('" + c.getIdCliente()+ "', '"+c.getNombre()+"', '"+c.getTelefono()+"', '"+c.getEmail()+"')";
+            consulta = "INSERT INTO `clientes` (`idCliente`, `nombre`, `telefono`,`email`)"
+                    + "VALUES ('" + c.getIdCliente() + "', '" + c.getNombre() + "', '" + c.getTelefono() + "', '" + c.getEmail() + "')";
             try {
-                PreparedStatement ps= Conexion.obtener().prepareStatement(consulta);
+                PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
                 ps.executeUpdate();
             } catch (ClassNotFoundException | SQLException e) {
                 System.out.println(e.toString());
@@ -110,33 +181,33 @@ public class Tienda2026 implements Serializable {
         }
         System.out.println("CLIENTES exportados a MySQL correctamente");
     }
-    private void jdbcLeeClientes(){
+
+    private void jdbcLeeClientes() {
         Statement sentencia;
-        ArrayList <Cliente> auxClientes =new ArrayList();
-        
-        String consultaSQL= "SELECT * FROM clientes";
+        ArrayList<Cliente> auxClientes = new ArrayList();
+
+        String consultaSQL = "SELECT * FROM clientes";
         try {
-            sentencia=Conexion.obtener().createStatement();
+            sentencia = Conexion.obtener().createStatement();
             ResultSet rs = sentencia.executeQuery(consultaSQL);
             while (rs.next()) {
-                auxClientes.add(new Cliente(rs.getString(1),rs.getString(2),rs.getString(3),rs.getString(4)));
-               
+                auxClientes.add(new Cliente(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+
             }
         } catch (ClassNotFoundException | SQLException e) {
             System.out.println(e.toString());
         }
-         System.out.println("CLIENTES importados desde MySQL correctamente");
-            auxClientes.stream().forEach(System.out::println);
+        System.out.println("CLIENTES importados desde MySQL correctamente");
+        auxClientes.stream().forEach(System.out::println);
     }
-    
-    
+
     //METODOS PARA GUARDAR Y LEER LOS ARTICULOS 
-     private void jdbcGuardaArticulos(){
+    private void jdbcGuardaArticulos() {
         String consulta;
-        
-        for (Articulo a:articulos.values()){
+
+        for (Articulo a : articulos.values()) {
             consulta = "INSERT INTO `articulos` (`idArticulo`, `descripcion`, `existencias`, `pvp`)"
-                    + " VALUES ('" + a.getIdArticulo()+"', '"+a.getDescripcion()+"', '"+a.getExistencias()+"', '" + a.getPvp()+"')";
+                    + " VALUES ('" + a.getIdArticulo() + "', '" + a.getDescripcion() + "', '" + a.getExistencias() + "', '" + a.getPvp() + "')";
             try {
                 PreparedStatement ps = Conexion.obtener().prepareStatement(consulta);
                 ps.executeUpdate();
@@ -146,42 +217,37 @@ public class Tienda2026 implements Serializable {
         }
         System.out.println("ARTICULOS exportados a MySQL correctamente");
     }
-     //FIN DE METODO
-   private void jdbcLeeArticulos(){
+    //FIN DE METODO
+
+    private void jdbcLeeArticulos() {
         Statement sentencia;
-        ArrayList <Articulo> articulosAux = new ArrayList();
+        ArrayList<Articulo> articulosAux = new ArrayList();
         /*LEER ARTICULOS DESDE LA BD */
-        
-        String consultaSQL ="SELECT * FROM articulos";      
+
+        String consultaSQL = "SELECT * FROM articulos";
         try {
             /* Usando la clase Conexion SE CREA UN OBJETO DE TIPO Statement sobre el que se van 
             a lanzar consultas SQL.
                Despues se lanza la consulta SQL a traves del Statement y se recogen los registros
             en un ResultSet (Conjunto de registros resultado de una consulta SQL)
-            */ 
-             // Resul set almacenamiento medio parecido a una coleccion 
+             */
+            // Resul set almacenamiento medio parecido a una coleccion 
             sentencia = Conexion.obtener().createStatement();
-            ResultSet rs=sentencia.executeQuery(consultaSQL);
-            while (rs.next())
-            {
-                articulosAux.add(new Articulo(rs.getString(1),rs.getString(2),rs.getInt(3),rs.getDouble(4)));
+            ResultSet rs = sentencia.executeQuery(consultaSQL);
+            while (rs.next()) {
+                articulosAux.add(new Articulo(rs.getString(1), rs.getString(2), rs.getInt(3), rs.getDouble(4)));
             }
             System.out.println("ARTICULOS importados desde MySQL correctamente");
-        }catch (ClassNotFoundException | SQLException e) {
-                System.out.println(e.toString());
+        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println(e.toString());
         }
         articulosAux.stream().forEach(System.out::println);
-}
+    }
 
-   
     //GUARDAR COLECCIONE DE LA TIENDA
     public void exportarColecciones() {
-        try (ObjectOutputStream oosArticulo = 
-                new ObjectOutputStream(new FileOutputStream("Articulo.dat")); 
-                ObjectOutputStream oosCliente = new 
-        ObjectOutputStream(new FileOutputStream("Cliente.dat"));
-                ObjectOutputStream oosPedido = new 
-        ObjectOutputStream(new FileOutputStream("Pedido.dat"))) {
+        try (ObjectOutputStream oosArticulo
+                = new ObjectOutputStream(new FileOutputStream("Articulo.dat")); ObjectOutputStream oosCliente = new ObjectOutputStream(new FileOutputStream("Cliente.dat")); ObjectOutputStream oosPedido = new ObjectOutputStream(new FileOutputStream("Pedido.dat"))) {
             //EL BUCLE RECORRE LA COLECCION UNA A UNA Y LA GUARDA   
             for (Articulo a : articulos.values()) {
                 oosArticulo.writeObject(a);
@@ -763,34 +829,33 @@ public class Tienda2026 implements Serializable {
             System.out.println("No se ha podido escribir en el fichero");
         }
     }
+
     public void dos() {
-    try (ObjectOutputStream oosEnero = new ObjectOutputStream(new FileOutputStream("PedidosEnero2026.dat"));
-         ObjectOutputStream oosFebrero = new ObjectOutputStream(new FileOutputStream("PedidosFebrero2026.dat"));
-         ObjectOutputStream oosMarzo = new ObjectOutputStream(new FileOutputStream("PedidosMarzo2026.dat"))) {
+        try (ObjectOutputStream oosEnero = new ObjectOutputStream(new FileOutputStream("PedidosEnero2026.dat")); ObjectOutputStream oosFebrero = new ObjectOutputStream(new FileOutputStream("PedidosFebrero2026.dat")); ObjectOutputStream oosMarzo = new ObjectOutputStream(new FileOutputStream("PedidosMarzo2026.dat"))) {
 
-        for (Pedido p : pedidos) {
+            for (Pedido p : pedidos) {
 
-            int mes = p.getFechaPedido().getMonthValue();
+                int mes = p.getFechaPedido().getMonthValue();
 
-            if (mes == 1) {
-                oosEnero.writeObject(p);
+                if (mes == 1) {
+                    oosEnero.writeObject(p);
 
-            } else if (mes == 2) {
-                oosFebrero.writeObject(p);
+                } else if (mes == 2) {
+                    oosFebrero.writeObject(p);
 
-            } else if (mes == 3) {
-                oosMarzo.writeObject(p);
+                } else if (mes == 3) {
+                    oosMarzo.writeObject(p);
+                }
             }
+
+        } catch (IOException ex) {
+            System.out.println("Error al copiar los pedidos");
+
+            new File("PedidosEnero2026.dat").delete();
+            new File("PedidosFebrero2026.dat").delete();
+            new File("PedidosMarzo2026.dat").delete();
         }
-
-    } catch (IOException ex) {
-        System.out.println("Error al copiar los pedidos");
-
-        new File("PedidosEnero2026.dat").delete();
-        new File("PedidosFebrero2026.dat").delete();
-        new File("PedidosMarzo2026.dat").delete();
     }
-}
 
     public void tres() {
         ArrayList<Pedido> pedidosAux = new ArrayList<>();
@@ -1001,32 +1066,6 @@ public class Tienda2026 implements Serializable {
         }
         return totalPedido;
     }*/
-    public void cargaDatos() {
-        clientes.put("36347775R", new Cliente("36347775R", "LOLA", "649222222", "lola@gmail.com"));
-        clientes.put("63921307Y", new Cliente("63921307Y", "JUAN", "652333333", "juan@gmail.com"));
-        clientes.put("80580845T", new Cliente("80580845T", "ANA", "658111111", "ana@gmail.com"));
-        clientes.put("02337565Y", new Cliente("02337565Y", "EDU", "634567890", "edu@gmail.com"));
-
-        articulos.put("1-11", new Articulo("1-11", "RATON LOGITECH ST ", 0, 15));
-        articulos.put("1-22", new Articulo("1-22", "TECLADO STANDARD  ", 5, 18));
-        articulos.put("2-11", new Articulo("2-11", "HDD SEAGATE 1 TB  ", 15, 80));
-        articulos.put("2-22", new Articulo("2-22", "SSD KINGSTOM 256GB", 9, 70));
-        articulos.put("2-33", new Articulo("2-33", "SSD KINGSTOM 512GB", 0, 200));
-        articulos.put("3-11", new Articulo("3-11", "HP LASERJET HP800 ", 2, 200));
-        articulos.put("3-22", new Articulo("3-22", "EPSON PRINT XP300 ", 5, 80));
-        articulos.put("4-11", new Articulo("4-11", "ASUS  MONITOR  22 ", 5, 100));
-        articulos.put("4-22", new Articulo("4-22", "HP MONITOR LED 28 ", 5, 180));
-        articulos.put("4-33", new Articulo("4-33", "SAMSUNG ODISSEY G5", 12, 580));
-
-        LocalDate hoy = LocalDate.now();
-        pedidos.add(new Pedido("80580845T-001/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("1-11"), 3), new LineaPedido(articulos.get("4-22"), 3)))));
-        pedidos.add(new Pedido("80580845T-002/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-10"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-11"), 3), new LineaPedido(articulos.get("4-22"), 2), new LineaPedido(articulos.get("4-33"), 4)))));
-        pedidos.add(new Pedido("80580845T-003/2026", clientes.get("80580845T"), LocalDate.parse("2026-01-15"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 1), new LineaPedido(articulos.get("3-22"), 2)))));
-        pedidos.add(new Pedido("36347775R-001/2026", clientes.get("36347775R"), LocalDate.parse("2026-02-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-22"), 1), new LineaPedido(articulos.get("2-22"), 3)))));
-        pedidos.add(new Pedido("36347775R-002/2026", clientes.get("36347775R"), LocalDate.parse("2026-02-10"), new ArrayList<>(List.of(new LineaPedido(articulos.get("4-33"), 3), new LineaPedido(articulos.get("2-11"), 3)))));
-        pedidos.add(new Pedido("63921307Y-001/2026", clientes.get("63921307Y"), LocalDate.parse("2026-03-05"), new ArrayList<>(List.of(new LineaPedido(articulos.get("2-11"), 5), new LineaPedido(articulos.get("2-33"), 3), new LineaPedido(articulos.get("4-33"), 2)))));
-    }
-
     //EJERCIOS EN DE COLECCIONES 
     //ORDENAR UN PEDIDO POR FECHA
     public void pedidoOrden() {
