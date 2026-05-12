@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -165,6 +166,27 @@ public class Tienda2026 implements Serializable {
                 + unidades + " unidades");
         }
     }
+    
+    // Total gastado por un cliente
+    public void ejercicioEcho3(){
+       String dni;
+        do{
+           System.out.println("INTRODUCA DNI DE CLIENTE");
+         dni=sc.nextLine().toUpperCase();  
+        }while(!MetodosAuxiliares.validarDni(dni));
+        if (clientes.containsKey(dni)) {
+            String dniFinal=dni;
+            double total = pedidos.stream().filter(p -> p.getClientePedido().getIdCliente().equalsIgnoreCase(dniFinal))
+                    .flatMap(p-> p.getCestaCompra().stream())
+                    .mapToDouble(l -> l.getUnidades()* l.getArticulo().getPvp())
+                    .sum();
+            
+             System.out.println("TOTAL GASTADO: " + total);
+        }else{
+            System.out.println("NO SE A ENCONTADO NIGUN CLIENTE CON ESE DNI");
+        }
+               
+    }
             
 
     //METODO PARA GUARDAR Y LEER CLIENTES
@@ -248,6 +270,7 @@ public class Tienda2026 implements Serializable {
     // GUARDAR  PEDIDOS JDBC
     private void jdbcguardaPedido(){
     }
+    
     //<editor-fold defaultstate="collapsed" desc="PERCITENCIA">
       
     //GUARDAR COLECCIONE DE LA TIENDA
@@ -901,10 +924,7 @@ public class Tienda2026 implements Serializable {
         }
         System.out.println("El total GASTADO por " + nombre + " desde el archivo es: " + totalCli);
     }
-    
-   
     //</editor-fold>
-     
     //METODO SELECIONAR UNA SECCION POR TECLADO 
     private void uno(){
         String[] secciones={"","PERIFERICOS","ALMACENAMIENTO","IMPRESORAS","MONITORES"};
