@@ -3,6 +3,7 @@
  */
 package es.educastur.lte40368.tienda2026;
 
+import com.mysql.cj.protocol.x.FetchDoneMoreResults;
 import java.io.BufferedWriter;
 import java.io.EOFException;
 import java.io.File;
@@ -243,7 +244,12 @@ public class Tienda2026 implements Serializable {
         }
         articulosAux.stream().forEach(System.out::println);
     }
-
+    
+    // GUARDAR  PEDIDOS JDBC
+    private void jdbcguardaPedido(){
+    }
+    //<editor-fold defaultstate="collapsed" desc="PERCITENCIA">
+      
     //GUARDAR COLECCIONE DE LA TIENDA
     public void exportarColecciones() {
         try (ObjectOutputStream oosArticulo
@@ -272,6 +278,8 @@ public class Tienda2026 implements Serializable {
             f.delete();
         }
     }
+    
+          
     //METODOS PARA EXPORTAR ARTICULOS SECCIONES EN BINARIOS 
 
     public void exporSeccinesBi() {
@@ -792,220 +800,214 @@ public class Tienda2026 implements Serializable {
         }
     }
 
-    // prueba exportar e importar archivos
+    //PRUEBA RA5 PERSISTENCIA
     //ORDENAR LOS CLIENTE EN ORDEN ALFABETICO DE A-Z
-    public void uno() {
-        System.out.println("\n----------------------------------------------------------------------------");
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.txt"))) {
-            clientes.values().stream()
-                    .sorted((c1, c2) -> c1.getNombre().compareToIgnoreCase(c2.getNombre()))
-                    .forEach(c -> {
-                        try {
-                            bw.write(c.toString());
-                            bw.newLine();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-            System.out.println("El Archvo se a creado correctamente en: clientes.txt");
-
+    private void unoPersistencia(){
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("clientesOrdenados.txt"))) {
+           clientes.values().stream().sorted(Comparator.comparing(Cliente::getNombre)).forEach(c->{
+               try {
+                   bw.write(c.toString()+"\n");
+               } catch (IOException e) {
+                   System.out.println("No se ha podido crear el archivo clientes.txt");
+               }
+           });
         } catch (IOException e) {
-            System.out.println("No se ha podido escribir en el fichero");
-        }
-        System.out.println("\n------------------------------------------------------------------------------");
-
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("clientes.csv"))) {
-            clientes.values().stream()
-                    .sorted((c1, c2) -> c1.getNombre().compareToIgnoreCase(c2.getNombre()))
-                    .forEach(c -> {
-                        try {
-                            bw.write(c.getIdCliente() + "," + c.getNombre() + "," + c.getTelefono() + "," + c.getEmail());
-                            bw.newLine();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-        } catch (IOException e) {
-            System.out.println("No se ha podido escribir en el fichero");
+            System.out.println("No se ha podido crear el archivo clientes.txt");
         }
     }
-
-    public void dos() {
-        try (ObjectOutputStream oosEnero = new ObjectOutputStream(new FileOutputStream("PedidosEnero2026.dat")); ObjectOutputStream oosFebrero = new ObjectOutputStream(new FileOutputStream("PedidosFebrero2026.dat")); ObjectOutputStream oosMarzo = new ObjectOutputStream(new FileOutputStream("PedidosMarzo2026.dat"))) {
-
+    
+    private void dosPersistencia(){
+        try (ObjectOutputStream oosPedidosEnero = new ObjectOutputStream(new FileOutputStream("pedidosEnero.dat"));
+            ObjectOutputStream oosPedidosFebrero = new ObjectOutputStream(new FileOutputStream("pedidosFebrero.dat"));
+            ObjectOutputStream oosPedidosMarzo = new ObjectOutputStream (new FileOutputStream("pedidosMarzo.dat"))) {
+	   	   
             for (Pedido p : pedidos) {
-
-                int mes = p.getFechaPedido().getMonthValue();
-
-                if (mes == 1) {
-                    oosEnero.writeObject(p);
-
-                } else if (mes == 2) {
-                    oosFebrero.writeObject(p);
-
-                } else if (mes == 3) {
-                    oosMarzo.writeObject(p);
+                switch (p.getFechaPedido().getMonthValue()) {
+                    case 1 -> oosPedidosEnero.writeObject(p);
+                    case 2 -> oosPedidosFebrero.writeObject(p);
+                    case 3 -> oosPedidosMarzo.writeObject(p);
                 }
             }
-
+            System.out.println("Copia de seguridad realizada con éxito.");
         } catch (IOException ex) {
-            System.out.println("Error al copiar los pedidos");
+            System.out.println("No se han podido crear los archivos correctamente, "
+                    + "revise unidades de almacenamiento e inténtelo de nuevo");
+            File f=new File("pedidosEnero.dat");
+            f.delete();
+            f=new File("pedidosFebrero.dat");
+            f.delete();
+            f=new File("pedidosMarzo.dat");
+            f.delete();
+        } 
+    }
+    
+    private void tresPersistencia(){
+        ArrayList <Pedido> pedidosPorMeses=new ArrayList();
+        String[] nombresArchivos={"pedidosEnero2026.dat", "pedidosFebrero2026.dat", "pedidosMarzo2026.dat"};
 
-            new File("PedidosEnero2026.dat").delete();
-            new File("PedidosFebrero2026.dat").delete();
-            new File("PedidosMarzo2026.dat").delete();
+        for (String nombre: nombresArchivos){
+            Pedido p;
+            try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(nombre))){
+               while ((p=(Pedido)ois.readObject()) != null){
+                   pedidosPorMeses.add(p);
+               }
+           }catch (EOFException e){
+               System.out.println("Finalizada la lectura del archivo" + nombre);
+           }catch (Exception e){
+               System.out.println(e.toString());
+           }
+        }
+        
+        System.out.println("\nLISTADO ARRAYLIST pedidosPorMeses:");
+        pedidosPorMeses.stream().forEach(System.out::println);
+    }
+    
+    private void cuatroPersistencia(){
+        String archivo;
+        for (Cliente c: clientes.values()){
+           archivo="pedidos_" + c.getNombre()+".txt";
+           int cont=0;
+           try(BufferedWriter bw = new BufferedWriter(new FileWriter(archivo))) {
+               for (Pedido p:pedidos){
+                   if (p.getClientePedido().equals(c)){
+                      cont++;
+                      bw.write(p.getIdPedido()+","+p.getFechaPedido()+","+totalPedido(p)+"\n");
+                   }
+               }
+           }
+           catch (IOException e) {
+              System.out.println("No se ha podido crear el archivo");
+           }
+           if (cont==0){
+              File f=new File(archivo);
+              f.delete();
+           }
         }
     }
-
-    public void tres() {
-        ArrayList<Pedido> pedidosAux = new ArrayList<>();
-        try (ObjectInputStream oisPedidosEnero2026
-                = new ObjectInputStream(
-                        new FileInputStream("PedidosEneros2026.dat"))) {
-            Pedido p;
-            while ((p = (Pedido) oisPedidosEnero2026.readObject()) != null) {
-                pedidosAux.add(p);
+    
+    private void cincoPersistencia(){
+        Scanner sc=new Scanner(System.in);
+        System.out.print("Teclea el nombre CLIENTE para calcular su TOTAL:");
+        String nombre=sc.next().toUpperCase();
+        String archivo="pedidos_" +nombre+".txt";
+        double totalCli=0;
+        try(Scanner scPedidosCli=new Scanner(new File(archivo))){
+            while (scPedidosCli.hasNextLine()){
+                String [] atributos = scPedidosCli.nextLine().split("[,]");                                                              
+                totalCli+= Double.parseDouble(atributos[2]); 
             }
-
-        } catch (FileNotFoundException e) {
-            System.out.println(e.toString());
-        } catch (EOFException e) {
-            System.out.println("Finalizada la lectura del archivo Articulo.dat");
-        } catch (ClassNotFoundException | IOException e) {
+        }catch(IOException e){
             System.out.println(e.toString());
         }
-
-        try (ObjectInputStream oisPedidosFebrero2026
-                = new ObjectInputStream(
-                        new FileInputStream("PedidosFebrero2026.dat"))) {
-            Pedido p;
-            while ((p = (Pedido) oisPedidosFebrero2026.readObject()) != null) {
-                pedidosAux.add(p);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println(e.toString());
-        } catch (EOFException e) {
-            System.out.println("Finalizada la lectura del archivo Articulo.dat");
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println(e.toString());
-        }
-
-        try (ObjectInputStream oisPedidosMarzo2026
-                = new ObjectInputStream(
-                        new FileInputStream("PedidosMarzo2026.dat"))) {
-            Pedido p;
-            while ((p = (Pedido) oisPedidosMarzo2026.readObject()) != null) {
-                pedidosAux.add(p);
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println(e.toString());
-        } catch (EOFException e) {
-            System.out.println("Finalizada la lectura del archivo Articulo.dat");
-        } catch (ClassNotFoundException | IOException e) {
-            System.out.println(e.toString());
-        }
-        System.out.println("Carga datos de pedidos Auxiliares");
-        pedidosAux.stream().forEach(System.out::println);
+        System.out.println("El total GASTADO por " + nombre + " desde el archivo es: " + totalCli);
     }
-
-    public void cuatro() {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter("Pedidos_NombrePedidos.txt"))) {
-            for (Cliente c : clientes.values()) {
-                int contador = 0;
-                for (Pedido p : pedidos) {
-                    if (p.getClientePedido().equals(c)) {
-                        contador++;
-                        break;
-                    }
-                }
-                if (contador > 0) {
-                    bw.write(c.toString());
-                    bw.newLine();
-                }
-            }
-
-            System.out.println("El Archvo se a creado correctamente en: Pedidos_NombrePedidos.txt ");
-        } catch (IOException e) {
-            System.out.println("No se ha podido escribir en el fichero");
-        }
-    }
+    
+   
+    //</editor-fold>
+     
     //METODO SELECIONAR UNA SECCION POR TECLADO 
-
-    private void uno1() {
-        String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
-        System.out.println("Selecion a listar");
-        String sec = sc.nextLine();
-        System.out.println("ARTICULOS DE LA SECCION" + seccion[Integer.parseInt(sec)] + ":");
-
-        // DOS FORMA DE RESOLVER
-        // 1 BUCLE FOR-EACH
-        for (Articulo a : articulos.values()) {
-            if (a.getIdArticulo().startsWith(sec)) {
+    private void uno(){
+        String[] secciones={"","PERIFERICOS","ALMACENAMIENTO","IMPRESORAS","MONITORES"};
+        System.out.println("SECCION A LISTAR:");
+        String sec=sc.next();
+        System.out.println("ARTICULOS DE LA SECCION " + secciones[Integer.parseInt(sec)] +":");
+        
+        //CON Bucle FOR-EACH 
+        for(Articulo a:articulos.values()){
+            if (a.getIdArticulo().startsWith(sec)){
                 System.out.println(a);
             }
         }
         System.out.println("");
-        //2 CON STREAMS ES MEJOR  
+        
+        //CON STREAMS
         articulos.values().stream()
-                .filter(a -> a.getIdArticulo().startsWith(sec))
-                .forEach(a -> System.out.println(a));
+                .filter(a->a.getIdArticulo().startsWith(sec))
+                .forEach(a->System.out.println(a));
+        
     }
-
-    private void dos1() {
-        String[] seccion = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
-    }
-
-    //METODOS PEDIDOS DE UN CLIENTE Y TOTAL GASTADO
-    private void tres1() {
-        sc.nextLine();
-        System.out.println("Introduce un dni");
-        String dni;
-        do {
-            System.out.println("DNI (id) CLIENTE:");
-            dni = sc.nextLine().toUpperCase();
-        } while (!MetodosAuxiliares.validarDni(dni));
-        if (clientes.containsKey(dni)) {
-            double total = 0;
-            System.out.println("Pedidos Clientes " + clientes.get(dni).getNombre() + ":");
-            /*for (Pedido p : pedidos) {
-                if (p.getClientePedido().getIdCliente().equals(dni)) {
-                    System.out.println(p + "\tTotal: " + totalPedido(p));
-                    total += totalPedido(p);
-                }
-            }*/
-
-            System.out.println("\t total gastado: " + total);
-        } else {
-            System.out.println("El cliente no exixste:");
+    
+    //LISTADO DE TODOS LOS ARTICULOS CLASIFICADOS POR SECCIONES
+    private void dos() {
+        String[] secciones={"","PERIFERICOS","ALMACENAMIENTO","IMPRESORAS","MONITORES"};
+        for (int i=1; i<=4;i++){
+            System.out.println(secciones[i]);
+            String prefijo = Integer.toString(i);
+            
+            
+            articulos.values().stream().filter(a -> a.getIdArticulo().startsWith(prefijo)).forEach(System.out::println);
         }
     }
-
-    //METODO LISTADO DE TODOS LOS ARTICULOS SEGUN LAS UNIDADES VENDIDAS
-    private void cuatro1() {
-        System.out.println("LISTADO DE ARTICULOS - UNIDADES VENDIDAS: \n");
+    //Dado un cliente mostrar sus pedidos junto con el importe de cada uno
+    //y también el total gastado por el usuario en la tienda
+    //validar si el dni introducido es correcto y si es cliente de la tienda
+    private void tres(){
+        String dni;
+        do{
+            System.out.println("DNI CLIENTE:");
+            dni=sc.nextLine().toUpperCase();
+        }while (!MetodosAuxiliares.validarDni(dni));
+        if (clientes.containsKey(dni)){
+            float total=0;
+            System.out.println("PEDIDOS DEL CLIENTE " + clientes.get(dni).getNombre() +":");
+            for (Pedido p:pedidos){
+                if (p.getClientePedido().getIdCliente().equals(dni)){
+                    System.out.println(p + "\tTOTAL: " + totalPedidoExam(p));
+                    total += totalPedidoExam(p);
+                }
+            }
+            System.out.println("\nTOTAL GASTADO: " + total);
+        }else{
+            System.out.println("ESE CLIENTE NO EXISTE");
+        }
+    }
+    
+    private double totalPedidoExam (Pedido p){
+        double totalPedido=0;
+        for (LineaPedido l: p.getCestaCompra()){
+            totalPedido+= l.getUnidades()* articulos.get(l.getArticulo()).getPvp();
+        }
+        return totalPedido;
+    }
+    
+    //LISTADO DE LOS ARTICULOS ORDENADOS DE MAYOR A MENOR POR UNIDADES VENDIDAS. SE APOYA EN EL METODO unidadesVendidas()
+    private void cuatro() {
+        System.out.println("LISTADO ARTICULOS - UNIDADES VENDIDAS:\n"); 
         articulos.values().stream()
-                .sorted(Comparator.comparing(a -> unidadesVendidaas((Articulo) a)).reversed())
-                .forEach(a -> System.out.println("\t" + a.getDescripcion() + "\t VENDIDAS " + unidadesVendidaas(a)));
-        // NOTA: PARA QUE ESTE METODO FUNCIONE HAY QUE CREAR UN METODO UNIDADES VENDIAS Y LLAMARLO 
+            .sorted(Comparator.comparing(a -> unidadesVendidas((Articulo) a)).reversed())
+            .forEach(a -> System.out.println("\t" + a.getDescripcion() + "\tVENDIDAS: " + unidadesVendidas(a))); 
+    }
+   
+    private int unidadesVendidas (Articulo a){
+        int c=0;
+        for (Pedido p:pedidos){
+            for (LineaPedido l:p.getCestaCompra()){
+                if (l.getArticulo().getIdArticulo().equals(a.getIdArticulo())){
+                    c+=l.getUnidades();
+                }
+            }
+        }
+        return c;
     }
 
-    //METODOS PARA MOSTRAR CLIENTES SIN PEDIDOS 
-    private void cinco1() {
-        ArrayList<Cliente> clientesSin = new ArrayList();
-        for (Cliente c : clientes.values()) {
-            int cont = 0;
-            for (Pedido p : pedidos) {
-                if (p.getClientePedido().equals(c)) {
+    //Crear un ArrayList ClientesSIN con los clientes que no han hecho ningún pedido e imprimirlo
+    private void cinco() {
+        ArrayList<Cliente> clientesSIN=new ArrayList();
+       
+        for (Cliente c:clientes.values()){
+            int cont=0;
+            for (Pedido p:pedidos){
+                if (p.getClientePedido().equals(c)){
                     cont++;
                     break;
                 }
             }
-            if (cont == 0) {
-                clientesSin.add(c);
+            if (cont==0){
+                clientesSIN.add(c);
             }
         }
-        System.out.println("clientes sin pedidos:\n");
-        for (Cliente c : clientesSin) {
+        System.out.println("LISTADO CLIENTES SIN PEDIDOS:\n");
+        for (Cliente c:clientesSIN){
             System.out.println(c);
         }
     }
@@ -1213,7 +1215,7 @@ public class Tienda2026 implements Serializable {
         System.out.println("\nTotal facturado los ultimos 5 dias: " + total5dias);
     }
 
-    private void cinco() {
+    private void cinco34() {
         double total
                 = pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
                         .mapToDouble(l -> l.getUnidades() * l.getArticulo().getPvp() / pedidos.size()).sum();
