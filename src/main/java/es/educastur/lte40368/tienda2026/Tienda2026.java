@@ -129,7 +129,168 @@ public class Tienda2026 implements Serializable {
     }
 
     // EJECICIOS ECHOS EN CASA CON STREAM
+    //PEDIDOS ULTIMOS 30 DIAS
+    public void ejercicio11() {
+
+        System.out.println(
+                "PEDIDOS DE LOS ULTIMOS 30 DIAS:\n");
+
+        pedidos.stream()
+                .filter(p
+                        -> p.getFechaPedido()
+                        .isAfter(
+                                LocalDate.now()
+                                        .minusDays(30)))
+                .sorted(Comparator.comparing(
+                        Pedido::getFechaPedido).reversed())
+                .forEach(p
+                        -> System.out.println(
+                        p.getIdPedido()
+                        + " - "
+                        + p.getClientePedido().getNombre()
+                        + " - "
+                        + p.getFechaPedido()));
+    }
+
+    // importe de la tineda ultimos 7 dias
+    public void ejercicio22() {
+
+        double total = pedidos.stream()
+                .filter(p
+                        -> p.getFechaPedido()
+                        .isAfter(
+                                LocalDate.now()
+                                        .minusDays(7)))
+                .mapToDouble(this::totalPedido)
+                .sum();
+
+        System.out.println(
+                "TOTAL FACTURADO ULTIMOS 7 DIAS: "
+                + total + " €");
+    }
+
     //  Clientes que compraron un artículo
+    //Importe medio de pedidos del mes actual
+    public void ejercicio13() {
+
+        double media = pedidos.stream()
+                .filter(p
+                        -> p.getFechaPedido()
+                        .getMonthValue()
+                == LocalDate.now()
+                        .getMonthValue())
+                .mapToDouble(this::totalPedido)
+                .average()
+                .orElse(0);
+
+        System.out.println(
+                "IMPORTE MEDIO DEL MES ACTUAL: "
+                + media + " €");
+    }
+
+    //Sección con más ventas este mes
+    public void ejercicio14() {
+
+        int perifericos = 0;
+        int almacenamiento = 0;
+        int impresoras = 0;
+        int monitores = 0;
+        LocalDate hoy = LocalDate.now();
+        int mesActual = hoy.getMonthValue();
+        int añoActual = hoy.getYear();
+        for (Pedido p : pedidos) {
+            if (p.getFechaPedido().getMonthValue()
+                    == mesActual && p.getFechaPedido().getYear() == añoActual) {
+
+                for (LineaPedido l : p.getCestaCompra()) {
+
+                    switch (l.getArticulo()
+                            .getIdArticulo()
+                            .charAt(0)) {
+
+                        case '1':
+                            perifericos += l.getUnidades();
+                            break;
+
+                        case '2':
+                            almacenamiento += l.getUnidades();
+                            break;
+
+                        case '3':
+                            impresoras += l.getUnidades();
+                            break;
+
+                        case '4':
+                            monitores += l.getUnidades();
+                            break;
+                    }
+                }
+            }
+        }
+
+        int max = perifericos;
+        String seccion = "PERIFERICOS";
+
+        if (almacenamiento > max) {
+
+            max = almacenamiento;
+            seccion = "ALMACENAMIENTO";
+        }
+
+        if (impresoras > max) {
+
+            max = impresoras;
+            seccion = "IMPRESORAS";
+        }
+
+        if (monitores > max) {
+
+            max = monitores;
+            seccion = "MONITORES";
+        }
+
+        System.out.println(
+                "SECCION CON MAS VENTAS ESTE MES:");
+
+        System.out.println(
+                seccion + " --> " + max + " unidades");
+    }
+
+    //Pedidos ordenados por fecha y total
+    public void ejercicio15() {
+
+        System.out.println(
+                "PEDIDOS ORDENADOS POR FECHA:\n");
+
+        pedidos.stream()
+                .sorted(Comparator.comparing(
+                        Pedido::getFechaPedido).reversed())
+                .forEach(p
+                        -> System.out.println(
+                        p.getIdPedido()
+                        + " - "
+                        + p.getFechaPedido()
+                        + " - "
+                        + totalPedido(p)
+                        + " €"));
+    }
+    // peddios de una fecha y su total
+    public void ejercicio15Dias() {
+
+        double total = pedidos.stream()
+                .filter(p
+                        -> p.getFechaPedido()
+                        .isAfter(
+                                LocalDate.now()
+                                        .minusDays(15)))
+                .mapToDouble(this::totalPedido)
+                .sum();
+
+        System.out.println(
+                "TOTAL FACTURADO EN LOS ULTIMOS 15 DIAS: "
+                + total + " €");
+    }
+
     public void ejercicioEcho1() {
         System.out.println("INTRODUCE EL ID DE UN ARTICULO");
         String idArticulo = sc.nextLine();
@@ -192,28 +353,169 @@ public class Tienda2026 implements Serializable {
     //Listado de artículos de una sección ordenados por precio (MAYOR a menor)
     //RA6
     public void ejercicosEcho4() {
-          System.out.println("Lista de articulos pos seccion");
+        System.out.println("Lista de articulos pos seccion");
         String[] secciones = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
-           String seccion ;
-         do {            
-             System.out.println("INTRODUSCAS UN NUMERO DE SECCION");
+        String seccion;
+        do {
+            System.out.println("INTRODUSCAS UN NUMERO DE SECCION");
             seccion = sc.nextLine().trim();
         } while (!MetodosAuxiliares.esInt(seccion));
-          int pos = Integer.parseInt(seccion);
-        if (!(pos < 1 || pos > 4)){
-           String sec = seccion;
+        int pos = Integer.parseInt(seccion);
+        if (!(pos < 1 || pos > 4)) {
+            String sec = seccion;
             System.out.println("Articulos de la seccion " + secciones[Integer.parseInt(sec)]);
             articulos.values().stream().filter(a -> a.getIdArticulo().startsWith(sec))
                     .sorted(Comparator.comparing(Articulo::getPvp).reversed())
                     .forEach(a -> System.out.println(a.getIdArticulo() + " - " + a.getDescripcion()
                     + " - " + a.getExistencias() + " - " + a.getPvp()));
 
-                   }else{
+        } else {
             System.out.println("Esa seccion no existe");
         }
-    }   
-    //<editor-fold defaultstate="collapsed" desc="guardarJDBC">
+    }
 
+    /*
+    Pedidos en los que se ha vendido más de 1 unidad de un artículo cuyo ID se 
+    solicita por teclado Se solicita el ID de un artículo por teclado,
+    y se muestra el listado de pedidos en los que se ha vendido más de 
+    1 unidad de ese artículo.
+     */
+    public void ejercicioPedidosArticulo() {
+
+        System.out.println(
+                "ID ARTICULO A COMPROBAR:");
+
+        String idArticulo = sc.nextLine();
+
+        System.out.println(
+                "\nPedidos en los que se ha vendido MAS de 1 unidad de "
+                + articulos.get(idArticulo).getDescripcion());
+
+        System.out.println(
+                "\nPEDIDO\t\t\tFECHA\t\tUNIDADES");
+
+        pedidos.stream()
+                .forEach(p -> {
+
+                    int unidades = p.getCestaCompra().stream()
+                            .filter(l
+                                    -> l.getArticulo()
+                                    .getIdArticulo()
+                                    .equalsIgnoreCase(idArticulo))
+                            .mapToInt(LineaPedido::getUnidades)
+                            .sum();
+
+                    if (unidades > 1) {
+
+                        System.out.println(
+                                p.getIdPedido()
+                                + "\t"
+                                + p.getFechaPedido()
+                                + "\t"
+                                + unidades);
+                    }
+                });
+    }
+
+    /*3. Listado que muestre cuantos artículos se han vendido de cada SECCION.
+Apoyándose en el método (ya desarrollado y disponible) que devuelve el número de unidades vendidas de un
+artículo, se trata de mostrar el total de artículos vendidos de cada SECCION de la tienda. Ejemplo:*/
+    public void ejercicio3() {
+
+        int perifericos = 0;
+        int almacenamiento = 0;
+        int impresoras = 0;
+        int monitores = 0;
+
+        for (Articulo a : articulos.values()) {
+
+            int unidades = unidadesVendidas(a);
+
+            switch (a.getIdArticulo().charAt(0)) {
+
+                case '1':
+                    perifericos += unidades;
+                    break;
+
+                case '2':
+                    almacenamiento += unidades;
+                    break;
+
+                case '3':
+                    impresoras += unidades;
+                    break;
+
+                case '4':
+                    monitores += unidades;
+                    break;
+            }
+        }
+
+        System.out.println(
+                "Total de articulos vendidos por SECCION:\n");
+
+        System.out.println(
+                "PERIFERICOS: " + perifericos);
+
+        System.out.println(
+                "ALMACENAMIENTO: " + almacenamiento);
+
+        System.out.println(
+                "IMPRESORAS: " + impresoras);
+
+        System.out.println(
+                "MONITORES: " + monitores);
+    }
+//. Listado que muestre el importe total vendido de cada SECCION
+
+    public void ejercicio4() {
+        double perifericos = 0;
+        double almacenamiento = 0;
+        double impresoras = 0;
+        double monitores = 0;
+
+        for (Articulo a : articulos.values()) {
+
+            double importe
+                    = unidadesVendidas(a) * a.getPvp();
+
+            switch (a.getIdArticulo().charAt(0)) {
+
+                case '1':
+                    perifericos += importe;
+                    break;
+
+                case '2':
+                    almacenamiento += importe;
+                    break;
+
+                case '3':
+                    impresoras += importe;
+                    break;
+
+                case '4':
+                    monitores += importe;
+                    break;
+            }
+        }
+
+        System.out.println(
+                "Importe total vendido por SECCION:\n");
+
+        System.out.println(
+                "PERIFERICOS: " + perifericos);
+
+        System.out.println(
+                "ALMACENAMIENTO: " + almacenamiento);
+
+        System.out.println(
+                "IMPRESORAS: " + impresoras);
+
+        System.out.println(
+                "MONITORES: " + monitores);
+    }
+
+    //<editor-fold defaultstate="collapsed" desc="guardarJDBC">
     //METODO PARA GUARDAR Y LEER CLIENTES
     private void jdbcGuartdarClientes() {
         String consulta;
@@ -949,8 +1251,9 @@ public class Tienda2026 implements Serializable {
     }
 
     //</editor-fold>
+    //RA6 
     //METODO SELECIONAR UNA SECCION POR TECLADO 
-    private void uno() {
+    private void unoRa6() {
         String[] secciones = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
         System.out.println("SECCION A LISTAR:");
         String sec = sc.next();
@@ -972,7 +1275,7 @@ public class Tienda2026 implements Serializable {
     }
 
     //LISTADO DE TODOS LOS ARTICULOS CLASIFICADOS POR SECCIONES
-    private void dos() {
+    private void dosRa6() {
         String[] secciones = {"", "PERIFERICOS", "ALMACENAMIENTO", "IMPRESORAS", "MONITORES"};
         for (int i = 1; i <= 4; i++) {
             System.out.println(secciones[i]);
@@ -985,7 +1288,7 @@ public class Tienda2026 implements Serializable {
     //Dado un cliente mostrar sus pedidos junto con el importe de cada uno
     //y también el total gastado por el usuario en la tienda
     //validar si el dni introducido es correcto y si es cliente de la tienda
-    private void tres() {
+    private void tresRa6() {
         String dni;
         do {
             System.out.println("DNI CLIENTE:");
@@ -1015,7 +1318,7 @@ public class Tienda2026 implements Serializable {
     }
 
     //LISTADO DE LOS ARTICULOS ORDENADOS DE MAYOR A MENOR POR UNIDADES VENDIDAS. SE APOYA EN EL METODO unidadesVendidas()
-    private void cuatro() {
+    private void cuatroRa6() {
         System.out.println("LISTADO ARTICULOS - UNIDADES VENDIDAS:\n");
         articulos.values().stream()
                 .sorted(Comparator.comparing(a -> unidadesVendidas((Articulo) a)).reversed())
@@ -1035,7 +1338,7 @@ public class Tienda2026 implements Serializable {
     }
 
     //Crear un ArrayList ClientesSIN con los clientes que no han hecho ningún pedido e imprimirlo
-    private void cinco() {
+    private void cincoRa6() {
         ArrayList<Cliente> clientesSIN = new ArrayList();
 
         for (Cliente c : clientes.values()) {
@@ -1212,7 +1515,7 @@ public class Tienda2026 implements Serializable {
         return total;
     }
 
-    private void uno11() {
+    private void unoRa7() {
 
         for (Cliente c : clientes.values()) {
             pedidos.stream().sorted(Comparator.comparing(p -> totalCliente2((Cliente) c)).reversed());
@@ -1221,7 +1524,7 @@ public class Tienda2026 implements Serializable {
 
     }
 
-    private void dos11() {
+    private void dosRa7() {
         System.out.println("INTRODUCE UN NUMERO PARA UNA SECCION"
                 + "\n1- PERIFERICOS"
                 + "\n2- ALMACENAMIENTO"
@@ -1236,7 +1539,7 @@ public class Tienda2026 implements Serializable {
 
     }
 
-    private void tres11() {
+    private void tresRa7() {
         Set<Articulo> vendidos
                 = pedidos.stream()
                         .flatMap(p -> p.getCestaCompra().stream())
@@ -1250,7 +1553,7 @@ public class Tienda2026 implements Serializable {
         System.out.println("\n");
     }
 
-    private void cuatro11() {
+    private void cuatroRa7() {
         LocalDate fecha1 = LocalDate.now().minusDays(5);
         double total5dias = pedidos.stream()
                 .filter(p -> p.getFechaPedido().isAfter(fecha1))
@@ -1259,7 +1562,7 @@ public class Tienda2026 implements Serializable {
         System.out.println("\nTotal facturado los ultimos 5 dias: " + total5dias);
     }
 
-    private void cinco34() {
+    private void cincoRa7() {
         double total
                 = pedidos.stream().flatMap(p -> p.getCestaCompra().stream())
                         .mapToDouble(l -> l.getUnidades() * l.getArticulo().getPvp() / pedidos.size()).sum();
